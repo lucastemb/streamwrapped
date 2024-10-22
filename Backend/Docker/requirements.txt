@@ -1,2 +1,2 @@
-Django>=5.1
+flask >=3.0.0
 pymongo>=4.10
