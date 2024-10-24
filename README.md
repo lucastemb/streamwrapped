@@ -12,10 +12,10 @@ python infrastructure.py
 second terminal:
 cd backend
 
-npm install -g nodemo
+npm install -g nodemon
 npm install cors
 
-nodemon server.js
+npm run dev
 
 third terminal:
 cd frontend/client
