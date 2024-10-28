@@ -9,4 +9,4 @@ RUN --mount=type=bind,source=requirements.txt,target=requirements.txt \
 
 COPY src/infrastructure.py .
 
-# do other stuff here... ?
+RUN python infrastructure.py 
