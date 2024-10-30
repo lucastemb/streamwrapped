@@ -4,6 +4,7 @@ import json
 @pytest.mark.parametrize("user_id,app_id,expected_status,expected_resp", [
     #invalid user, valid game
     ("xXenergizer_batteries_receptacleXx","400013",500,""),
+     ("xXenergizer_batteries_receptacleXx","-1",500,""),
     #valid user, valid game
     ("76561198941602532","1245620",200,'''
         {
@@ -314,6 +315,7 @@ import json
     ("76561198941602532","645390",500,""),
     #valid user, invalid game
     ("76561198941602532","-1",500,""),
+
 ])
 def test_get_achievements(user_id,app_id,expected_status,expected_resp):
     response = requests.get(f"http://127.0.0.1:8000/get-achievements/{user_id}/{app_id}")
