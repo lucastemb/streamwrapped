@@ -446,5 +446,64 @@ def test_get_games():
     assert response.status_code == 200 
     assert response.json() == json.loads(test)
 
+def test_get_user_1():
+    response = requests.get("http://127.0.0.1:8000/search-user/lucastemb")
+    test = '''{
+        "player": {
+            "avatar": "https://avatars.steamstatic.com/e0d32d3a966354c660410d8d66f14d5b2040fe81.jpg",
+            "avatarfull": "https://avatars.steamstatic.com/e0d32d3a966354c660410d8d66f14d5b2040fe81_full.jpg",
+            "avatarhash": "e0d32d3a966354c660410d8d66f14d5b2040fe81",
+            "avatarmedium": "https://avatars.steamstatic.com/e0d32d3a966354c660410d8d66f14d5b2040fe81_medium.jpg",
+            "communityvisibilitystate": 3,
+            "lastlogoff": 1730212988,
+            "personaname": "lucastemb",
+            "personastate": 1,
+            "personastateflags": 0,
+            "primaryclanid": "103582791438082971",
+            "profilestate": 1,
+            "profileurl": "https://steamcommunity.com/id/lucastemb/",
+            "steamid": "76561198109081792",
+            "timecreated": 1380493415
+        }
+    }'''
+    
+    assert response.status_code == 200 
+    assert response.json() == json.loads(test)
 
-test_get_games()
+def test_get_user_2():
+    response = requests.get("http://127.0.0.1:8000/search-user/Snowballius")
+    test = '''{
+        "player": {
+            "avatar": "https://avatars.steamstatic.com/a5cbd18696d926bda0868c447f329588e68bfb64.jpg",
+            "avatarfull": "https://avatars.steamstatic.com/a5cbd18696d926bda0868c447f329588e68bfb64_full.jpg",
+            "avatarhash": "a5cbd18696d926bda0868c447f329588e68bfb64",
+            "avatarmedium": "https://avatars.steamstatic.com/a5cbd18696d926bda0868c447f329588e68bfb64_medium.jpg",
+            "commentpermission": 1,
+            "communityvisibilitystate": 3,
+            "lastlogoff": 1730244136,
+            "loccountrycode": "US",
+            "personaname": "Snowballius",
+            "personastate": 0,
+            "personastateflags": 0,
+            "primaryclanid": "103582791438082971",
+            "profilestate": 1,
+            "profileurl": "https://steamcommunity.com/id/Snowballius/",
+            "realname": "Jo-Man",
+            "steamid": "76561198113958016",
+            "timecreated": 1383944059
+        }
+    }'''
+            
+    assert response.status_code == 200 
+    assert response.json() == json.loads(test)
+
+def test_get_user_no_id():
+    response = requests.get("http://127.0.0.1:8000/search-user/")
+            
+    assert response.status_code == 404
+
+def test_get_user_nonexistent_id():
+    response = requests.get("http://127.0.0.1:8000/search-user/NonexistentUserID")
+    test = '''"No match"'''
+    assert response.status_code == 200 
+    assert response.json() == json.loads(test)
