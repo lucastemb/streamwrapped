@@ -26,3 +26,4 @@ def get_game_achievements(user_id, app_id):
 
 if __name__ == "__main__":
     app.run(port=8000, debug=True)
+
