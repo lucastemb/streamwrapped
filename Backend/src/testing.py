@@ -2,6 +2,7 @@ import pytest
 import requests
 import json
 
+#test 1: get games for account (thechildizard)
 def test_get_games():
     response = requests.get("http://127.0.0.1:8000/get-games/76561198109081792")
     test = '''{
