@@ -18,6 +18,17 @@ app.get("/get-data/:playerId/:gameId", async (req, res)=> {
     }
 });
 
+app.get("/get-games/:playerId", async (req, res) => {
+    const { playerId } = req.params;
+    try {
+        const response = await axios.get(`http://127.0.0.1:8000/get-games/${playerId}`);
+        res.json(response.data);
+    } catch (error) {
+        console.error('Error pinging Flask endpoint:', error.message);
+        res.status(500).send('Error pinging Flask server');
+    }
+});
+
 app.listen(PORT, ()=> {
-    console.log(`Server statred on port ${PORT}`)
+    console.log(`Server started on port ${PORT}`)
 })
