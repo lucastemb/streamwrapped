@@ -12,7 +12,7 @@ steam=Steam(KEY)
 
 #Setup MongoDB conn
 MONGO_PWD=os.getenv("MONGO_PASSWORD")
-uri=f"mongodb+srv://steamwrapped_admin:{MONGO_PWD}@tasks.re39x.mongodb.net/?retryWrites=true&w=majority&appName=tasks"
+uri=f"mongodb+srv://steamwrapped_admin:{MONGO_PWD}@steamwrapped.re39x.mongodb.net/?retryWrites=true&w=majority&appName=steamwrapped"
 client=MongoClient(uri,server_api=ServerApi('1'))
 db_mongo=client['steamwrapped']
 
