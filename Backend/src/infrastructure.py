@@ -49,9 +49,35 @@ def attempt_login(user_login):
     #TODO: confirm function returns required data
     user=db_mongo['user_list'].find_one({"user_login": f"{user_login}"})
     if(user):
+        #assumes playerID is listed in the document named <user_login>, under "playerId" 
         return jsonify(user["playerId"]), 200
     else:
         return jsonify("ERROR: User Not Found"),500
+
+#TODO: consider merging the next two functions into one.
+
+#high level interface, adds task to user's task list in mongodb
+@app.route("/add-task/<user_id>/<task_id>/<task_obj>")
+def add_task(user_id,task_id,task_obj):
+    #note: placeholder function. 
+    if(!task_exists(user_id,task_id)):
+        #TODO: confirm correctness
+        db_mongo['task_list'].find_one({"playerId": f"{user_id}"})[task_id]=task_obj
+        return jsonify(f"Success: {task_id} added for {user_id}"), 200
+    else:
+        return jsonify(f"ERROR: {task_id} already exists for {user_id}"),200
+
+#high level interface, replaces task in user's task list with another
+@app.route("/set-task/<user_id>/<task_id>/<task_obj>")
+def set_task(user_id,task_id,task_obj):
+    #note: placeholder function. 
+    if(task_exists(user_id,task_id)):
+        #TODO: confirm correctness
+        db_mongo['task_list'].find_one({"playerId": f"{user_id}"})[task_id]=task_obj
+        return jsonify(f"Success: {task_id} edited for {user_id}"), 200
+    else:
+        return jsonify(f"ERROR: {task_id} does not exist for {user_id}"),200
+
 
 if __name__ == "__main__":
     app.run(port=8000, debug=True)
