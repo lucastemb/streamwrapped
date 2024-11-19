@@ -65,7 +65,7 @@ def add_task(user_id,task_id,task_obj):
         db_mongo['task_list'].find_one({"playerId": f"{user_id}"})[task_id]=task_obj
         return jsonify(f"Success: {task_id} added for {user_id}"), 200
     else:
-        return jsonify(f"ERROR: {task_id} already exists for {user_id}"),200
+        return jsonify(f"ERROR: {task_id} already exists for {user_id}"),500
 
 #high level interface, replaces task in user's task list with another
 @app.route("/set-task/<user_id>/<task_id>/<task_obj>")
@@ -76,7 +76,18 @@ def set_task(user_id,task_id,task_obj):
         db_mongo['task_list'].find_one({"playerId": f"{user_id}"})[task_id]=task_obj
         return jsonify(f"Success: {task_id} edited for {user_id}"), 200
     else:
-        return jsonify(f"ERROR: {task_id} does not exist for {user_id}"),200
+        return jsonify(f"ERROR: {task_id} does not exist for {user_id}"),500
+
+#high level interface, deletes task in user's task list
+@app.route("/set-task/<user_id>/<task_id>")
+def set_task(user_id,task_id):
+    #note: placeholder function. 
+    if(task_exists(user_id,task_id)):
+        #TODO: confirm correctness
+        db_mongo['task_list'].find_one({"playerId": f"{user_id}"}).pop(task_id);
+        return jsonify(f"Success: {task_id} deleted for {user_id}"), 200
+    else:
+        return jsonify(f"ERROR: {task_id} does not exist for {user_id}"),500
 
 
 if __name__ == "__main__":

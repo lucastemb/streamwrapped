@@ -96,6 +96,18 @@ app.get("/set-task/:playerId/:taskId/:taskData", async (req, res) => {
     }
 });
 
+app.get("/delete-task/:playerId/:taskId", async (req, res) => {
+    const { playerId, taskId} = req.params;
+    try {
+        const response = await axios.get(`http://127.0.0.1:8000/delete-task/${playerId}/${taskID}`);
+        res.json(response.data);
+
+    } catch (error) {
+        console.error('Error pinging Flask endpoint:', error.message);
+        res.status(500).send('Error pinging Flask server');
+    }
+});
+
 app.listen(PORT, ()=> {
     console.log(`Server started on port ${PORT}`)
 })
