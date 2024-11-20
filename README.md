@@ -3,6 +3,7 @@
 pip install flask
 pip install python-steam-api
 pip install python-dotenv
+pip install pymongo
 
 first terminal:
 cd backend/src
