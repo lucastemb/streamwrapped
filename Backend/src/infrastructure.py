@@ -60,7 +60,7 @@ def attempt_login(user_login):
 @app.route("/add-task/<user_id>/<task_id>/<task_obj>")
 def add_task(user_id,task_id,task_obj):
     #note: placeholder function. 
-    if(!task_exists(user_id,task_id)):
+    if not task_exists(user_id,task_id):
         #TODO: confirm correctness
         db_mongo['task_list'].find_one({"playerId": f"{user_id}"})[task_id]=task_obj
         return jsonify(f"Success: {task_id} added for {user_id}"), 200
