@@ -14,49 +14,32 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-export default function Dashboard() {
-  const [playerId, setPlayerId] = useState("")
+interface DashboardProps {
+  email: string
+  steamId: string
+  steamUrl: string
+
+
+}
+export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
   const [gameId, setGameId] = useState("")
   const [responseMessage, setResponseMessage] = useState<any[]>([]);
   const [gameInfo, setGameInfo] = useState<any[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedGame, setSelectedGame] = useState<any>(null);
 
-  const handlePlayerChange = (e: any) => {
-    setPlayerId(e.target.value)
-  }
+  useEffect(()=> {
+    const fetchGames = async () => {
+      try {
+        const gameResponse = await axios.get(`http://localhost:8080/get-games/${steamId}`);
+        setGameInfo(gameResponse.data.games);
+      } catch (error) {
+        console.error("Error fetching games:", error);
+      }
+    };
 
-  /*
-  const handleGameChange = (e: any) => {
-    setGameId(e.target.value)
-  }
-
-  const submitToBackEnd =  async () => {
-    console.log(`Player ID: ${playerId}, Game ID: ${gameId}`);
-    try {
-      const response = await axios.get(`http://localhost:8080/get-data/${playerId}/${gameId}`)
-      console.log(response.data.playerstats.achievements)
-      setResponseMessage(response.data.playerstats.achievements)
-
-      const gameResponse = await axios.get(`http://localhost:8080/get-games/${playerId}`);
-      console.log(gameResponse.data.games);
-      setGameInfo(gameResponse.data.games);
-    }
-    catch (error) {
-      console.error('Error sending data to backend:', error);
-    }
-  }
-  */
-
-  const fetchGames = async () => {
-    try {
-      const gameResponse = await axios.get(`http://localhost:8080/get-games/${playerId}`);
-      console.log(gameResponse.data.games);
-      setGameInfo(gameResponse.data.games);
-    } catch (error) {
-      console.error("Error fetching games:", error);
-    }
-  };
+    fetchGames()
+  }, [steamId])
 
   const handleGameSelect = (game: any) => {
     setSelectedGame(game);
@@ -69,24 +52,12 @@ export default function Dashboard() {
     if (!selectedGameId) return;
   
     try {
-      const response = await axios.get(`http://localhost:8080/get-data/${playerId}/${selectedGameId}`);
-      console.log(response.data.playerstats.achievements);
+      const response = await axios.get(`http://localhost:8080/get-data/${steamId}/${selectedGameId}`);
       setResponseMessage(response.data.playerstats.achievements);
     } catch (error) {
       console.error("Error fetching achievements:", error);
     }
   };
-
-  useEffect(()=>{
-    console.log(responseMessage)
-  }, [responseMessage])
-
-  /*
-  const getGameInfoId = (gameId: number) => {
-    const game = gameInfo.find((game) => game.appid === gameId);
-    return game;
-  };
-  */
 
   return (
     <>
@@ -104,21 +75,7 @@ export default function Dashboard() {
         </div>
 
         {/* User ID */}
-        <div className="flex flex-col items-center mb-4">
-          <label className="font-semibold">User ID: </label>
-          <input
-            type="text"
-            value={playerId}
-            onChange={handlePlayerChange}
-            className="rounded px-2 py-1 text-black mb-3"
-          />
-          <button
-            onClick={fetchGames}
-            className="bg-blue-500 text-white rounded px-4 py-2 ml-2"
-          >
-            Fetch Games
-          </button>
-        </div>
+        
 
         {/* Game Dropdown */}
         {gameInfo.length > 0 && (

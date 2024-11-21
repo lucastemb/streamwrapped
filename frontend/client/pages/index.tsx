@@ -3,15 +3,35 @@ import Dashboard from "./dashboard";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { GoogleLogin } from '@react-oauth/google';
 import {jwtDecode} from "jwt-decode"
+import axios from "axios"; 
+import Form from "./form"
 
 export default function Home() {
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
+  const [steamId, setSteamId] = useState<string>("");
+  const [steamURL, setSteamURL] = useState<string>("");
   const [failed, setFailed] = useState<boolean | undefined>(undefined);
   const [email, setEmail] = useState<string>("");
+  const [exists, setExists] = useState<boolean>();
 
   useEffect(()=> {
-    console.log(email);
-  },[email])
+    if(loggedIn && email){
+      axios.get(`http://localhost:8080/exists-user/${email}`).then((response)=> {
+        if(response.data.exists === true){
+          setSteamURL(response.data.user.steamURL)
+          setSteamId(response.data.user.steamID)
+          setExists(true)
+        }
+        else if (response.data.exists === false) {
+          setExists(false)
+        }
+      }).catch((error) => {
+        console.error('Error', error)
+        setExists(false)
+      })
+    }
+  },[loggedIn, email])
+
   return(
   <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_CLIENT_ID || " "}>
   {!loggedIn && (<GoogleLogin onSuccess={(response)=> {
@@ -23,10 +43,10 @@ export default function Home() {
   onError={()=>{setFailed(true)}}
   />)}
    
-  {loggedIn && ((!failed) ? (
+  {loggedIn && ((!failed) ? (exists ?
     <>
-    <Dashboard/>
-    </>
+    <Dashboard email={email} steamId={steamId} steamUrl={steamURL}/>
+    </> : <Form email={email} setExists={setExists}/>
   ): (<p> Error: Not an authorized user. </p>))}
   </GoogleOAuthProvider>
   );
