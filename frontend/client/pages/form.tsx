@@ -9,9 +9,6 @@ interface FormProps {
 export default function InputForm({ email, setExists}: FormProps) {
     const [steamId,setSteamId] = useState<string>()
     const [steamURL,setSteamURL] = useState<string>()
-    useEffect(()=> {
-        console.log(email)
-    }, [email])
     
     const handleIDChange = (e: any) => {
         setSteamId(e.target.value)

@@ -22,21 +22,15 @@ interface DashboardProps {
 
 }
 export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
-  const [playerId, setPlayerId] = useState("")
   const [gameId, setGameId] = useState("")
   const [responseMessage, setResponseMessage] = useState<any[]>([]);
   const [gameInfo, setGameInfo] = useState<any[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedGame, setSelectedGame] = useState<any>(null);
 
-  const handlePlayerChange = (e: any) => {
-    setPlayerId(e.target.value)
-  }
-
   useEffect(()=> {
     const fetchGames = async () => {
       try {
-        console.log(steamId)
         const gameResponse = await axios.get(`http://localhost:8080/get-games/${steamId}`);
         setGameInfo(gameResponse.data.games);
       } catch (error) {
@@ -46,29 +40,6 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
 
     fetchGames()
   }, [steamId])
-
-  /*
-  const handleGameChange = (e: any) => {
-    setGameId(e.target.value)
-  }
-
-  const submitToBackEnd =  async () => {
-    console.log(`Player ID: ${playerId}, Game ID: ${gameId}`);
-    try {
-      const response = await axios.get(`http://localhost:8080/get-data/${playerId}/${gameId}`)
-      console.log(response.data.playerstats.achievements)
-      setResponseMessage(response.data.playerstats.achievements)
-
-      const gameResponse = await axios.get(`http://localhost:8080/get-games/${playerId}`);
-      console.log(gameResponse.data.games);
-      setGameInfo(gameResponse.data.games);
-    }
-    catch (error) {
-      console.error('Error sending data to backend:', error);
-    }
-  }
-  */
-
 
   const handleGameSelect = (game: any) => {
     setSelectedGame(game);
@@ -82,23 +53,11 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
   
     try {
       const response = await axios.get(`http://localhost:8080/get-data/${steamId}/${selectedGameId}`);
-      console.log(response.data.playerstats.achievements);
       setResponseMessage(response.data.playerstats.achievements);
     } catch (error) {
       console.error("Error fetching achievements:", error);
     }
   };
-
-  useEffect(()=>{
-    console.log(responseMessage)
-  }, [responseMessage])
-
-  /*
-  const getGameInfoId = (gameId: number) => {
-    const game = gameInfo.find((game) => game.appid === gameId);
-    return game;
-  };
-  */
 
   return (
     <>
