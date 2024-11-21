@@ -4,6 +4,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { GoogleLogin } from '@react-oauth/google';
 import {jwtDecode} from "jwt-decode"
 import axios from "axios"; 
+import Form from "./form"
 
 export default function Home() {
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
@@ -13,7 +14,6 @@ export default function Home() {
 
   useEffect(()=> {
     if(loggedIn && email){
-      console.log(email)
       axios.get(`http://localhost:8080/exists-user/${email}`).then((response)=> {
         if(response.data.exists === true){
           setExists(true)
@@ -42,7 +42,7 @@ export default function Home() {
   {loggedIn && ((!failed) ? (exists ?
     <>
     <Dashboard/>
-    </> : <div> Hello </div>
+    </> : <Form email={email} setExists={setExists}/>
   ): (<p> Error: Not an authorized user. </p>))}
   </GoogleOAuthProvider>
   );
