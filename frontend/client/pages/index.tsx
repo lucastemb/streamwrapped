@@ -8,6 +8,8 @@ import Form from "./form"
 
 export default function Home() {
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
+  const [steamId, setSteamId] = useState<string>("");
+  const [steamURL, setSteamURL] = useState<string>("");
   const [failed, setFailed] = useState<boolean | undefined>(undefined);
   const [email, setEmail] = useState<string>("");
   const [exists, setExists] = useState<boolean>();
@@ -16,6 +18,8 @@ export default function Home() {
     if(loggedIn && email){
       axios.get(`http://localhost:8080/exists-user/${email}`).then((response)=> {
         if(response.data.exists === true){
+          setSteamURL(response.data.user.steamURL)
+          setSteamId(response.data.user.steamID)
           setExists(true)
         }
         else if (response.data.exists === false) {
@@ -41,7 +45,7 @@ export default function Home() {
    
   {loggedIn && ((!failed) ? (exists ?
     <>
-    <Dashboard/>
+    <Dashboard email={email} steamId={steamId} steamUrl={steamURL}/>
     </> : <Form email={email} setExists={setExists}/>
   ): (<p> Error: Not an authorized user. </p>))}
   </GoogleOAuthProvider>

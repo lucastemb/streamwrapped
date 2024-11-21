@@ -14,7 +14,14 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-export default function Dashboard() {
+interface DashboardProps {
+  email: string
+  steamId: string
+  steamUrl: string
+
+
+}
+export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
   const [playerId, setPlayerId] = useState("")
   const [gameId, setGameId] = useState("")
   const [responseMessage, setResponseMessage] = useState<any[]>([]);
@@ -25,6 +32,20 @@ export default function Dashboard() {
   const handlePlayerChange = (e: any) => {
     setPlayerId(e.target.value)
   }
+
+  useEffect(()=> {
+    const fetchGames = async () => {
+      try {
+        console.log(steamId)
+        const gameResponse = await axios.get(`http://localhost:8080/get-games/${steamId}`);
+        setGameInfo(gameResponse.data.games);
+      } catch (error) {
+        console.error("Error fetching games:", error);
+      }
+    };
+
+    fetchGames()
+  }, [steamId])
 
   /*
   const handleGameChange = (e: any) => {
@@ -48,15 +69,6 @@ export default function Dashboard() {
   }
   */
 
-  const fetchGames = async () => {
-    try {
-      const gameResponse = await axios.get(`http://localhost:8080/get-games/${playerId}`);
-      console.log(gameResponse.data.games);
-      setGameInfo(gameResponse.data.games);
-    } catch (error) {
-      console.error("Error fetching games:", error);
-    }
-  };
 
   const handleGameSelect = (game: any) => {
     setSelectedGame(game);
@@ -69,7 +81,7 @@ export default function Dashboard() {
     if (!selectedGameId) return;
   
     try {
-      const response = await axios.get(`http://localhost:8080/get-data/${playerId}/${selectedGameId}`);
+      const response = await axios.get(`http://localhost:8080/get-data/${steamId}/${selectedGameId}`);
       console.log(response.data.playerstats.achievements);
       setResponseMessage(response.data.playerstats.achievements);
     } catch (error) {
@@ -104,21 +116,7 @@ export default function Dashboard() {
         </div>
 
         {/* User ID */}
-        <div className="flex flex-col items-center mb-4">
-          <label className="font-semibold">User ID: </label>
-          <input
-            type="text"
-            value={playerId}
-            onChange={handlePlayerChange}
-            className="rounded px-2 py-1 text-black mb-3"
-          />
-          <button
-            onClick={fetchGames}
-            className="bg-blue-500 text-white rounded px-4 py-2 ml-2"
-          >
-            Fetch Games
-          </button>
-        </div>
+        
 
         {/* Game Dropdown */}
         {gameInfo.length > 0 && (
