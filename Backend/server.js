@@ -6,7 +6,7 @@ require('dotenv').config();
 const app = express()
 const PORT = 8080
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://steamwrapped_admin:${process.env.MONGO_PWD}@steamwrapped.re39x.mongodb.net/?retryWrites=true&w=majority&appName=steamwrapped`;
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -137,6 +137,24 @@ app.post("/add-task", async (req, res)=> {
     }
 
 })
+
+app.delete("/delete-task", async (req, res)=> {
+    console.log(req.query)
+    const { taskId } = req.query;
+    try {
+        //get db 
+        console.log("data")
+        const database = client.db("steamwrapped");
+        //users
+        const tasks = database.collection("tasks");
+        const result = await tasks.deleteOne({ _id: new ObjectId(taskId) });
+        return res.status(200).json({ message: "Task deleted successfully" });
+    }
+    catch (error) {
+        return res.status(500).json({error: "Internal server error"});
+    }
+
+});
 
 //tasks page
 //TODO: please confirm correctness of this call
