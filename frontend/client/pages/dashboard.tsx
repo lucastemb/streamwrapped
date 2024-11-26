@@ -1,5 +1,6 @@
 import Image from "next/image";
 import localFont from "next/font/local";
+import Task from "../components/task";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -18,47 +19,19 @@ interface DashboardProps {
   email: string
   steamId: string
   steamUrl: string
-
-
 }
 export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
-  const [gameId, setGameId] = useState("")
-  const [responseMessage, setResponseMessage] = useState<any[]>([]);
-  const [gameInfo, setGameInfo] = useState<any[]>([]);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedGame, setSelectedGame] = useState<any>(null);
-
-  useEffect(()=> {
-    const fetchGames = async () => {
-      try {
-        const gameResponse = await axios.get(`http://localhost:8080/get-games/${steamId}`);
-        setGameInfo(gameResponse.data.games);
-      } catch (error) {
-        console.error("Error fetching games:", error);
-      }
-    };
-
-    fetchGames()
-  }, [steamId])
-
-  const handleGameSelect = (game: any) => {
-    setSelectedGame(game);
-    setGameId(game.appid.toString());
-    setDropdownOpen(false);
-    fetchAchievements(game.appid.toString());
-  };
-  
-  const fetchAchievements = async (selectedGameId: string) => {
-    if (!selectedGameId) return;
-  
-    try {
-      const response = await axios.get(`http://localhost:8080/get-data/${steamId}/${selectedGameId}`);
-      setResponseMessage(response.data.playerstats.achievements);
-    } catch (error) {
-      console.error("Error fetching achievements:", error);
+  const [submitted, setSubmitted] = useState<boolean>(false);
+  const [tasks, setTasks] = useState([]);
+  useEffect(() => {
+    const fetchTasks = async () => {
+    const response = await axios.get("http://localhost:8080/get-tasks", {
+      params: { steamId } 
+    })
+    setTasks(response.data.tasks)
     }
-  };
-
+    fetchTasks();
+  }, [tasks])
   return (
     <>
       <div className="bg-slate-700 min-h-screen text-white p-4">
@@ -73,72 +46,28 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
           />
           <h1 className="text-3xl font-bold">Steam Wrapped</h1>
         </div>
-
-        {/* User ID */}
-        
-
-        {/* Game Dropdown */}
-        {gameInfo.length > 0 && (
-          <div className="relative mb-4">
-            <label className="font-semibold">Game: </label>
-            <button
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="bg-blue-500 text-white rounded px-4 py-2 flex items-center"
-            >
-              {selectedGame ? (
-                <>
-                  <img
-                    src={`http://media.steampowered.com/steamcommunity/public/images/apps/${selectedGame.appid}/${selectedGame.img_icon_url}.jpg`}
-                    alt={selectedGame.name}
-                    className="w-6 h-6 mr-2"
-                  />
-                  {selectedGame.name}
-                </>
-              ) : (
-                "Select a Game"
-              )}
-            </button>
-
-            {dropdownOpen && (
-              <ul className="absolute bg-white text-black rounded shadow-md mt-2 max-h-60 overflow-y-auto w-64">
-                {gameInfo.map((game: any) => (
-                  <li
-                    key={game.appid}
-                    className="flex items-center px-4 py-2 cursor-pointer hover:bg-gray-200"
-                    onClick={() => handleGameSelect(game)}
-                  >
-                    <img
-                      src={`http://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`}
-                      alt={game.name}
-                      className="w-6 h-6 mr-2"
-                    />
-                    {game.name}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
-
-        {/* Achievements */}
-        {responseMessage.length > 0 && (
+        {tasks && tasks.map((task: any)=> (
+          <div className="bg-sky-700 text-white rounded flex flex-row justify-around items-center">
           <div>
-            <p className="text-center text-lg font-bold">Achievements</p>
-            {responseMessage
-              .filter((achievement) => achievement.achieved === 0)
-              .map((achievement: any, index: number) => (
-                <div
-                  key={index}
-                  className="bg-slate-900 p-4 rounded-lg shadow-md my-2"
-                >
-                  <p className="font-bold">{achievement.name}</p>
-                  <p>Description: {achievement.description}</p>
-                  <p>Achieved: {achievement.achieved ? "Yes" : "No"}</p>
-                  <p>Unlock Time: {achievement.unlocktime}</p>
-                </div>
-              ))}
+          <h1 className="font-bold"> {task.game.name} </h1>
           </div>
-        )}
+          <div>
+          <p> {task.achievement.name} </p> 
+          <p> {task.achievement.description} </p> 
+          </div>
+          <div>
+          <div className="flex justify-center flex-col items-center">
+            <button className="bg-yellow-500 text-white rounded px-4 flex items-center h-12">
+              Edit
+            </button>
+            <button className="bg-red-500 text-white rounded px-4 flex items-center h-12">
+              Delete
+            </button>
+        </div>
+          </div>
+          </div>
+        ))}
+        <Task submitted={false} steamId={steamId} steamUrl={steamUrl}/>
       </div>
     </>
   );

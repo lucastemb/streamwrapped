@@ -30,7 +30,7 @@ async function connectToDatabase() {
   // Call this at app startup
 connectToDatabase();
 
-
+app.use(express.json());
 app.use(cors())
 //TODO: Consider condensing below functions using a helper function as follows:
 /*
@@ -91,6 +91,19 @@ app.get("/exists-user/:email", async (req, res) => {
         }
 });
 
+app.get("/get-tasks", async (req, res) => {
+    const { steamId } = req.query
+    try {
+      const database = client.db("steamwrapped");
+      const users = database.collection("tasks");
+      const query = { user: steamId };
+      const tasks = await users.find(query).toArray();
+      return res.json({tasks});
+    } catch(error) {
+        return res.json({error: "Internal server error"});
+    }
+});
+
 app.post("/add-user/:email/:steamID/:steamURL", async (req, res) => {
     const { email, steamID, steamURL } = req.params;
     try {
@@ -106,6 +119,24 @@ app.post("/add-user/:email/:steamID/:steamURL", async (req, res) => {
         return res.status(500).json({error: "Internal server error"});
     }
 });
+
+app.post("/add-task", async (req, res)=> {
+    console.log(req.body)
+    const {steamId, game, achievement} = req.body;
+    try {
+        //get db 
+        const database = client.db("steamwrapped");
+        //users
+        const tasks = database.collection("tasks");
+        const document = { user: steamId, game: game, achievement: achievement };
+        const result = await tasks.insertOne(document);
+        return res.status(201).json({ message: "User added successfully", user: document });
+    }
+    catch (error) {
+        return res.status(500).json({error: "Internal server error"});
+    }
+
+})
 
 //tasks page
 //TODO: please confirm correctness of this call
