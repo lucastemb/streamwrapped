@@ -20,9 +20,11 @@ interface DashboardProps {
   steamId: string
   steamUrl: string
 }
+
 export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
   const [submitted, setSubmitted] = useState<boolean>(false);
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState<any[]>([]);
+
   useEffect(() => {
     const fetchTasks = async () => {
     const response = await axios.get("http://localhost:8080/get-tasks", {
@@ -32,6 +34,18 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
     }
     fetchTasks();
   }, [tasks])
+
+  const deleteTask = async (taskId: string) => {
+    console.log("Deleting task with ID:", taskId);
+    const response = await axios.delete("http://127.0.0.1:8080/delete-task", {
+      params: { taskId },
+    });
+
+    if (response.status === 200) {
+      setTasks((prevTasks) => prevTasks.filter((task) => task._id !== taskId));
+    }
+  };
+
   return (
     <>
       <div className="bg-slate-700 min-h-screen text-white p-4">
@@ -60,7 +74,8 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
             <button className="bg-yellow-500 text-white rounded px-4 flex items-center h-12">
               Edit
             </button>
-            <button className="bg-red-500 text-white rounded px-4 flex items-center h-12">
+            <button className="bg-red-500 text-white rounded px-4 flex items-center h-12"
+              onClick={() => deleteTask(task._id)}>
               Delete
             </button>
         </div>
