@@ -5,9 +5,10 @@ import Image from "next/image";
 interface TaskProps {
   steamId: string
   steamUrl: string
+  submitted: boolean
 }
 
-export default function Task({steamId, steamUrl }: TaskProps) {
+export default function Task({steamId, steamUrl, submitted }: TaskProps) {
   const [gameId, setGameId] = useState("")
   const [responseMessage, setResponseMessage] = useState<any[]>([]);
   const [gameInfo, setGameInfo] = useState<any[]>([]);
@@ -15,6 +16,7 @@ export default function Task({steamId, steamUrl }: TaskProps) {
   const [achievementDropdown, setAchievementDropdownOpen] = useState<boolean>(false);
   const [selectedGame, setSelectedGame] = useState<any>(null);
   const [selectedAchievement, setSelectedAchievement] = useState<any>(null);
+  const [isSubmitted, setSubmitted] = useState<boolean>(false);
  
   useEffect(()=> {
     const fetchGames = async () => {
@@ -29,6 +31,7 @@ export default function Task({steamId, steamUrl }: TaskProps) {
     fetchGames()
   }, [steamId])
 
+
   const handleGameSelect = (game: any) => {
     setSelectedGame(game);
     setGameId(game.appid.toString());
@@ -36,6 +39,20 @@ export default function Task({steamId, steamUrl }: TaskProps) {
     fetchAchievements(game.appid.toString());
   };
 
+  const addTask = async (game: any, achievement: any) => {
+    const response = await axios.post('http://127.0.0.1:8080/add-task/', {
+      steamId,
+      game,
+      achievement
+    });
+    if (response.status === 201) {
+      setSubmitted(true);
+      setSelectedGame(null);
+      setSelectedAchievement(null);
+      setResponseMessage([]);
+    
+    }
+  }
   const handleAchievementSelect = (achievement: any) => {
     setSelectedAchievement(achievement);
     setAchievementDropdownOpen(false)
@@ -136,12 +153,12 @@ export default function Task({steamId, steamUrl }: TaskProps) {
             )}
           </div>
         )}
+        <div className="flex justify-center items-center">
+        <button className="bg-green-600 text-white rounded px-4 flex items-center h-12" onClick={()=>addTask(selectedGame, selectedAchievement)}>
+          Submit
+        </button>
+        </div>
       </div>
     </>
-  );
-
-  return(
-  <>
-  </>
   );
 }
