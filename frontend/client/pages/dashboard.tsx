@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import Task from "../components/task";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { throwIfDisallowedDynamic } from "next/dist/server/app-render/dynamic-rendering";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -22,7 +23,7 @@ interface DashboardProps {
 }
 
 export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
-  const [submitted, setSubmitted] = useState<boolean>(false);
+  const [submitted, setSubmitted] = useState<boolean | undefined>(false);
   const [tasks, setTasks] = useState<any[]>([]);
   const [userProfile, setUserProfile] = useState<any>(null);
 
@@ -48,7 +49,7 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
     setTasks(response.data.tasks)
     }
     fetchTasks();
-  }, [tasks])
+  }, [steamId, submitted])
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -68,7 +69,6 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
   }, [profileId]);
 
   const deleteTask = async (taskId: string) => {
-    console.log("Deleting task with ID:", taskId);
     const response = await axios.delete("http://127.0.0.1:8080/delete-task", {
       params: { taskId },
     });
@@ -108,11 +108,11 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
         {tasks && tasks.map((task: any)=> (
           <div className="bg-sky-700 text-white rounded flex flex-row justify-around items-center">
           <div>
-          <h1 className="font-bold"> {task.game.name} </h1>
+          <h1 className="font-bold"> {task.game ? task.game.name : "Loading..."} </h1>
           </div>
           <div>
-          <p> {task.achievement.name} </p> 
-          <p> {task.achievement.description} </p> 
+          <p> {task.achievement ? task.achievement.name : "Loading..."} </p> 
+          <p> {task.achievement ? task.achievement.description : "Loading..."} </p> 
           </div>
           <div>
           <div className="flex justify-center flex-col items-center">
@@ -127,7 +127,7 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
           </div>
           </div>
         ))}
-        <Task submitted={false} steamId={steamId} steamUrl={steamUrl}/>
+        <Task setSubmitted={setSubmitted} steamId={steamId} steamUrl={steamUrl}/>
       </div>
     </>
   );

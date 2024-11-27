@@ -13,24 +13,30 @@ export default function Home() {
   const [failed, setFailed] = useState<boolean | undefined>(undefined);
   const [email, setEmail] = useState<string>("");
   const [exists, setExists] = useState<boolean>();
+  const [loading, setLoading] = useState<boolean>(true); // Add loading state
 
-  useEffect(()=> {
-    if(loggedIn && email){
-      axios.get(`http://localhost:8080/exists-user/${email}`).then((response)=> {
-        if(response.data.exists === true){
-          setSteamURL(response.data.user.steamURL)
-          setSteamId(response.data.user.steamID)
-          setExists(true)
+  useEffect(() => {
+    const getStuff = async () => {
+      if (loggedIn && email) {
+        try {
+          const response = await axios.get(`http://localhost:8080/exists-user/${email}`);
+          if (response.data.exists) {
+            setSteamURL(response.data.user.steamURL);
+            setSteamId(response.data.user.steamID);
+            setExists(true);
+          } else {
+            setExists(false);
+          }
+        } catch (error) {
+          console.error('Error', error);
+          setExists(false);
+        } finally {
+          setLoading(false); 
         }
-        else if (response.data.exists === false) {
-          setExists(false)
-        }
-      }).catch((error) => {
-        console.error('Error', error)
-        setExists(false)
-      })
-    }
-  },[loggedIn, email])
+      }
+    };
+    getStuff();
+  });
 
   return(
   <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_CLIENT_ID || " "}>
@@ -43,9 +49,8 @@ export default function Home() {
   onError={()=>{setFailed(true)}}
   />)}
    
-  {loggedIn && ((!failed) ? (exists ?
-    <>
-    <Dashboard email={email} steamId={steamId} steamUrl={steamURL}/>
+  {loggedIn && ((!failed) && !loading ? (exists ?
+    <> <Dashboard email={email} steamId={steamId} steamUrl={steamURL}/> 
     </> : <Form email={email} setExists={setExists}/>
   ): (<p> Error: Not an authorized user. </p>))}
   </GoogleOAuthProvider>

@@ -1,14 +1,15 @@
 import {useEffect, useState} from 'react'
 import axios from 'axios';
 import Image from "next/image";
+import { Dispatch, SetStateAction } from "react";
 
 interface TaskProps {
   steamId: string
   steamUrl: string
-  submitted: boolean
+  setSubmitted: Dispatch<SetStateAction<boolean | undefined>>
 }
 
-export default function Task({steamId, steamUrl, submitted }: TaskProps) {
+export default function Task({steamId, steamUrl, setSubmitted }: TaskProps) {
   const [gameId, setGameId] = useState("")
   const [responseMessage, setResponseMessage] = useState<any[]>([]);
   const [gameInfo, setGameInfo] = useState<any[]>([]);
@@ -16,7 +17,6 @@ export default function Task({steamId, steamUrl, submitted }: TaskProps) {
   const [achievementDropdown, setAchievementDropdownOpen] = useState<boolean>(false);
   const [selectedGame, setSelectedGame] = useState<any>(null);
   const [selectedAchievement, setSelectedAchievement] = useState<any>(null);
-  const [isSubmitted, setSubmitted] = useState<boolean>(false);
  
   useEffect(()=> {
     const fetchGames = async () => {
@@ -29,6 +29,10 @@ export default function Task({steamId, steamUrl, submitted }: TaskProps) {
           return 0;
         });
         setGameInfo(sortedGames);
+        if(steamId){
+          const gameResponse = await axios.get(`http://localhost:8080/get-games/${steamId}`);
+          setGameInfo(gameResponse.data.games);
+        }
       } catch (error) {
         console.error("Error fetching games:", error);
       }
