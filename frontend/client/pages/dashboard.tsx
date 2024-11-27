@@ -109,6 +109,7 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
           <div className="bg-sky-700 text-white rounded flex flex-row justify-around items-center">
           <div>
           <h1 className="font-bold"> {task.game ? task.game.name : "Loading..."} </h1>
+          <p> Time Elapsed: {(Date.now()/1000) - task.time}</p>
           </div>
           <div>
           <p> {task.achievement ? task.achievement.name : "Loading..."} </p> 
@@ -116,8 +117,8 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
           </div>
           <div>
           <div className="flex justify-center flex-col items-center">
-            <button className="bg-yellow-500 text-white rounded px-4 flex items-center h-12">
-              Edit
+            <button className="bg-green-500 text-white rounded px-4 flex items-center h-12">
+              Refresh
             </button>
             <button className="bg-red-500 text-white rounded px-4 flex items-center h-12"
               onClick={() => deleteTask(task._id)}>
