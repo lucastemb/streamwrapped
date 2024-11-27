@@ -58,6 +58,7 @@ export default function Task({steamId, steamUrl, setSubmitted }: TaskProps) {
       setSelectedGame(null);
       setSelectedAchievement(null);
       setResponseMessage([]);
+      setTimeout(() => setSubmitted(false), 500); // Temporary fix for achievements updating after submit
     
     }
   }
