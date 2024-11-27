@@ -140,7 +140,7 @@ app.post("/add-task", async (req, res)=> {
         const database = client.db("steamwrapped");
         //users
         const tasks = database.collection("tasks");
-        const document = { user: steamId, game: game, achievement: achievement };
+        const document = { user: steamId, game: game, achievement: achievement, time: Date.now()/ 1000};
         const result = await tasks.insertOne(document);
         return res.status(201).json({ message: "User added successfully", user: document });
     }
