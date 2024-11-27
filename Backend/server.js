@@ -71,6 +71,18 @@ app.get("/get-games/:playerId", async (req, res) => {
     }
 });
 
+app.get("/search-user/:profileId", async (req, res) => {
+    const { profileId } = req.params;
+    try {
+      const response = await axios.get(`http://127.0.0.1:8000/search-user/${profileId}`);
+      console.log("User data from Flask:", response.data);
+      res.json(response.data);
+    } catch (error) {
+      console.error("Error fetching user data from Flask:", error.message);
+      res.status(500).send("Error fetching user data from Flask");
+    }
+  });
+
 //login attempt
 //NOTE: this is a PLACEHOLDER
 app.get("/exists-user/:email", async (req, res) => {

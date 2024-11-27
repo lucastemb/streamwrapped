@@ -22,7 +22,13 @@ export default function Task({steamId, steamUrl, submitted }: TaskProps) {
     const fetchGames = async () => {
       try {
         const gameResponse = await axios.get(`http://localhost:8080/get-games/${steamId}`);
-        setGameInfo(gameResponse.data.games);
+        // Sort games alphabetically
+        const sortedGames = gameResponse.data.games.sort((a: any, b: any) => {
+          if (a.name < b.name) return -1;
+          if (a.name > b.name) return 1;
+          return 0;
+        });
+        setGameInfo(sortedGames);
       } catch (error) {
         console.error("Error fetching games:", error);
       }
