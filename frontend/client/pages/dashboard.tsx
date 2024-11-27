@@ -24,6 +24,21 @@ interface DashboardProps {
 export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [tasks, setTasks] = useState<any[]>([]);
+  const [userProfile, setUserProfile] = useState<any>(null);
+
+    // Extract profileId from the steamUrl
+    const extractProfileId = (url: string): string | null => {
+      try {
+        const parts = url.split("/");
+        return parts[parts.length - 2] || null; // Get the second-to-last part
+      } catch (err) {
+        console.error("Error extracting profileId from URL:", err);
+        return null;
+      }
+    };
+  
+    // Get profileId from the provided steamUrl
+    const profileId = extractProfileId(steamUrl);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -34,6 +49,23 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
     }
     fetchTasks();
   }, [tasks])
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8080/search-user/${profileId}`);
+        console.log("User Profile:", response.data);
+        setUserProfile(response.data.player);
+
+        //console.log("Avatar Hash:", response.data.player.avatarhash);
+        //console.log("Persona Name:", response.data.player.personaname);
+      } catch (err) {
+        console.error("Error fetching user profile:", err);
+      }
+    };
+
+    fetchUserProfile();
+  }, [profileId]);
 
   const deleteTask = async (taskId: string) => {
     console.log("Deleting task with ID:", taskId);
@@ -59,6 +91,19 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
             className="mb-4"
           />
           <h1 className="text-3xl font-bold">Steam Wrapped</h1>
+          {/* Profile Pic and Name */}
+          {userProfile && (
+            <div className="flex flex-col items-center mt-4">
+              <Image
+                src={`https://avatars.steamstatic.com/${userProfile.avatarhash}_full.jpg`}
+                alt={`${userProfile.personaname}'s Avatar`}
+                width={100}
+                height={100}
+                className="rounded-full shadow-lg mb-2"
+              />
+              <p className="text-xl font-semibold text-gray-200">{userProfile.personaname}</p>
+            </div>
+          )}
         </div>
         {tasks && tasks.map((task: any)=> (
           <div className="bg-sky-700 text-white rounded flex flex-row justify-around items-center">

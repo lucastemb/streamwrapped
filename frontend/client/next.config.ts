@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactStrictMode: true,
   images: {
-    domains: ['media.steampowered.com'],
+    domains: ['media.steampowered.com', 'avatars.steamstatic.com'],
   },
 };
 
