@@ -21,6 +21,7 @@ export default function Task({steamId, steamUrl, setSubmitted }: TaskProps) {
   useEffect(()=> {
     const fetchGames = async () => {
       try {
+        if(steamId){
         const gameResponse = await axios.get(`http://localhost:8080/get-games/${steamId}`);
         // Sort games alphabetically
         const sortedGames = gameResponse.data.games.sort((a: any, b: any) => {
@@ -29,10 +30,7 @@ export default function Task({steamId, steamUrl, setSubmitted }: TaskProps) {
           return 0;
         });
         setGameInfo(sortedGames);
-        if(steamId){
-          const gameResponse = await axios.get(`http://localhost:8080/get-games/${steamId}`);
-          setGameInfo(gameResponse.data.games);
-        }
+      }
       } catch (error) {
         console.error("Error fetching games:", error);
       }
