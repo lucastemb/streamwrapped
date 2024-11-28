@@ -100,9 +100,22 @@ app.get("/get-tasks", async (req, res) => {
     }
 });
 
-app.patch("/add-completion", async(req, res)=> {
-    const { taskId } = req.query;
+app.get("/get-friends", async (req, res) => {
+    const { steamId } = req.query
     try {
+    const response = await axios.get(`http://127.0.0.1:8000/get-friends/${steamId}`);
+    res.json(response.data);
+    } catch (error) {
+    console.error("Error fetching user data from Flask:", error.message);
+    res.status(500).send("Error fetching user data from Flask");
+    }
+});
+
+app.patch("/add-completion", async(req, res)=> {
+    const { taskId } = req.body;
+    console.log(taskId)
+    try {
+        console.log('hello!!')
         const database = client.db("steamwrapped");
         const tasks = database.collection("tasks");
         const result = await tasks.updateOne({ _id: new ObjectId(taskId) }, { $set: {timeAchieved: Date.now()/1000}});
@@ -136,9 +149,26 @@ app.post("/add-task", async (req, res)=> {
         const database = client.db("steamwrapped");
         //users
         const tasks = database.collection("tasks");
-        const document = { user: steamId, game: game, achievement: achievement, time: Date.now()/ 1000};
+        const document = { user: steamId, game: game, achievement: achievement, time: Date.now()/ 1000, type: 1};
         const result = await tasks.insertOne(document);
-        return res.status(201).json({ message: "User added successfully", user: document });
+        return res.status(201).json({ message: "Task added successfully", user: document });
+    }
+    catch (error) {
+        return res.status(500).json({error: "Internal server error"});
+    }
+
+})
+
+app.post("/add-friend-task", async (req, res)=> {
+    const {steamId, friendCount} = req.body;
+    try {
+        //get db 
+        const database = client.db("steamwrapped");
+        //users
+        const tasks = database.collection("tasks");
+        const document = { user: steamId, desiredFriendCount: friendCount, type: 2};
+        const result = await tasks.insertOne(document);
+        return res.status(201).json({ message: "Task added successfully", user: document });
     }
     catch (error) {
         return res.status(500).json({error: "Internal server error"});
