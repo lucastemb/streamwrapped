@@ -6,10 +6,11 @@ import { Dispatch, SetStateAction } from "react";
 interface TaskProps {
   steamId: string
   steamUrl: string
+  setSubmitted: Dispatch<SetStateAction<boolean>>
+  submitted: boolean
 }
 
-export default function FriendTask({steamId, steamUrl, }: TaskProps) {
-  const [responseMessage, setResponseMessage] = useState<any[]>([]);
+export default function FriendTask({steamId, steamUrl, setSubmitted, submitted }: TaskProps) {
   const [friendCount, setFriendCount] = useState<number>(0);
 
   const addTask = async (friends: number) => {
@@ -17,6 +18,9 @@ export default function FriendTask({steamId, steamUrl, }: TaskProps) {
       steamId,
       friendCount
     });
+    if (response.status === 201) {
+      setSubmitted(!submitted);  
+    }
   }
 
   return (

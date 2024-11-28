@@ -26,10 +26,11 @@ interface DashboardProps {
 }
 
 export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
-  const [submitted, setSubmitted] = useState<boolean | undefined>(false);
+  const [submitted, setSubmitted] = useState<boolean>(false);
   const [tasks, setTasks] = useState<any[]>([]);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [updated, setUpdated] = useState<boolean | undefined>(false);
+  const [reRenderKey, setReRenderKey] = useState<number>(0);
 
   // Extract profileId from the steamUrl
   const extractProfileId = (url: string): string | null => {
@@ -45,8 +46,11 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
     // Get profileId from the provided steamUrl
   const profileId = extractProfileId(steamUrl);
 
+  const forceRerender = () => {
+    setReRenderKey(reRenderKey+1);
+  }
   const compareTasks = async () => {
-    setUpdated(true);
+    setUpdated(!updated);
     tasks.map(async (task)=> {
       if(task?.type === 1){
         const gameId = task.game.appid;
@@ -71,7 +75,6 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
         }
       }
     })
-    setUpdated(false);
   }
 
   useEffect(() => {
@@ -82,7 +85,7 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
     setTasks(response.data.tasks)
     }
     fetchTasks();
-  },[submitted, updated])
+  },[updated, submitted])
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -159,11 +162,11 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
             }
           })}
           <div className="flex flex-row justify-around items-center"> 
-          <Task setSubmitted={setSubmitted} steamId={steamId} steamUrl={steamUrl} />
-          <FriendTask steamId={steamId} steamUrl={steamUrl} />
+          <Task steamId={steamId} steamUrl={steamUrl} setSubmitted={setSubmitted} submitted={submitted} />
+          <FriendTask steamId={steamId} steamUrl={steamUrl} setSubmitted={setSubmitted} submitted={submitted} />
           </div>
           <div className="flex justify-center">
-            <button onClick={compareTasks}className="bg-green-500 text-white rounded px-4 py-2 flex items-center h-12">
+            <button onClick={()=> {compareTasks(); forceRerender()}}className="bg-green-500 text-white rounded px-4 py-2 flex items-center h-12">
               Update
             </button>
           </div>
