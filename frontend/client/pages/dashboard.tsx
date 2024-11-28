@@ -138,7 +138,7 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center">
                     <Image
-                      src={`http://media.steampowered.com/steamcommunity/public/images/apps/${task.game.appid}/${task.game.img_icon_url}.jpg`} // Add image logic if needed
+                      src={`http://media.steampowered.com/steamcommunity/public/images/apps/${task.game.appid}/${task.game.img_icon_url}.jpg`}
                       alt={task.game ? task.game.name : "Game"}
                       width={40}
                       height={40}
