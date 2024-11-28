@@ -6,10 +6,11 @@ import { Dispatch, SetStateAction } from "react";
 interface TaskProps {
   steamId: string
   steamUrl: string
-  setSubmitted: Dispatch<SetStateAction<boolean | undefined>>
+  setSubmitted: Dispatch<SetStateAction<boolean>>
+  submitted: boolean
 }
 
-export default function Task({steamId, steamUrl, setSubmitted }: TaskProps) {
+export default function Task({steamId, steamUrl, setSubmitted, submitted }: TaskProps) {
   const [gameId, setGameId] = useState("")
   const [responseMessage, setResponseMessage] = useState<any[]>([]);
   const [gameInfo, setGameInfo] = useState<any[]>([]);
@@ -18,9 +19,7 @@ export default function Task({steamId, steamUrl, setSubmitted }: TaskProps) {
   const [selectedGame, setSelectedGame] = useState<any>(null);
   const [selectedAchievement, setSelectedAchievement] = useState<any>(null);
  
-  useEffect(()=> {
-    console.log(responseMessage)
-  }, [responseMessage])
+
   useEffect(()=> {
     const fetchGames = async () => {
       try {
@@ -57,11 +56,10 @@ export default function Task({steamId, steamUrl, setSubmitted }: TaskProps) {
       achievement
     });
     if (response.status === 201) {
-      setSubmitted(true);
+      setSubmitted(!submitted);
       setSelectedGame(null);
       setSelectedAchievement(null);
       setResponseMessage([]);
-      setTimeout(() => setSubmitted(false), 500); // Temporary fix for achievements updating after submit
     
     }
   }
