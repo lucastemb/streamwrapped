@@ -19,6 +19,9 @@ export default function Task({steamId, steamUrl, setSubmitted }: TaskProps) {
   const [selectedAchievement, setSelectedAchievement] = useState<any>(null);
  
   useEffect(()=> {
+    console.log(responseMessage)
+  }, [responseMessage])
+  useEffect(()=> {
     const fetchGames = async () => {
       try {
         if(steamId){
@@ -125,7 +128,7 @@ export default function Task({steamId, steamUrl, setSubmitted }: TaskProps) {
         )}
 
         {/* Achievements */}
-        {responseMessage.length > 0 && (
+        {responseMessage ? (responseMessage?.length > 0 ? (
           
           <div className="flex flex-col">
             <div className="flex flex-col">
@@ -161,7 +164,22 @@ export default function Task({steamId, steamUrl, setSubmitted }: TaskProps) {
               </ul>
             )}
           </div>
-        )}
+        ) : <div className="flex flex-col">
+        <label className="font-semibold">Achievement: </label>
+        <div
+          className="bg-blue-500 text-white rounded px-4 py-2 flex items-center"
+        >
+        No achievements found
+        </div>
+        </div>) : 
+        (<div className="flex flex-col">
+          <label className="font-semibold">Achievement: </label>
+          <div
+            className="bg-blue-500 text-white rounded px-4 py-2 flex items-center"
+          >
+          No achievements found
+          </div>
+          </div>)}
         <div className="flex justify-center items-center">
         <button className="bg-green-600 text-white rounded px-4 flex items-center h-12" onClick={()=>addTask(selectedGame, selectedAchievement)}>
           Submit
