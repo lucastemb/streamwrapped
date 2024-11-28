@@ -60,7 +60,6 @@ app.get("/search-user/:profileId", async (req, res) => {
     const { profileId } = req.params;
     try {
       const response = await axios.get(`http://127.0.0.1:8000/search-user/${profileId}`);
-      console.log("User data from Flask:", response.data);
       res.json(response.data);
     } catch (error) {
       console.error("Error fetching user data from Flask:", error.message);
@@ -101,6 +100,19 @@ app.get("/get-tasks", async (req, res) => {
     }
 });
 
+app.patch("/add-completion", async(req, res)=> {
+    const { taskId } = req.query;
+    try {
+        const database = client.db("steamwrapped");
+        const tasks = database.collection("tasks");
+        const result = await tasks.updateOne({ _id: new ObjectId(taskId) }, { $set: {timeAchieved: Date.now()/1000}});
+        return res.status(200).json({ message: "Completion status updated successfully" });
+    }
+    catch (error) {
+        return res.status(500).json({error: "Internal server error"});
+    }
+})
+
 app.post("/add-user/:email/:steamID/:steamURL", async (req, res) => {
     const { email, steamID, steamURL } = req.params;
     try {
@@ -118,7 +130,6 @@ app.post("/add-user/:email/:steamID/:steamURL", async (req, res) => {
 });
 
 app.post("/add-task", async (req, res)=> {
-    console.log(req.body)
     const {steamId, game, achievement} = req.body;
     try {
         //get db 
@@ -136,11 +147,9 @@ app.post("/add-task", async (req, res)=> {
 })
 
 app.delete("/delete-task", async (req, res)=> {
-    console.log(req.query)
     const { taskId } = req.query;
     try {
         //get db 
-        console.log("data")
         const database = client.db("steamwrapped");
         //users
         const tasks = database.collection("tasks");

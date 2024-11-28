@@ -27,19 +27,35 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
   const [tasks, setTasks] = useState<any[]>([]);
   const [userProfile, setUserProfile] = useState<any>(null);
 
-    // Extract profileId from the steamUrl
-    const extractProfileId = (url: string): string | null => {
-      try {
-        const parts = url.split("/");
-        return parts[parts.length - 2] || null; // Get the second-to-last part
-      } catch (err) {
-        console.error("Error extracting profileId from URL:", err);
-        return null;
-      }
-    };
+  // Extract profileId from the steamUrl
+  const extractProfileId = (url: string): string | null => {
+    try {
+      const parts = url.split("/");
+      return parts[parts.length - 2] || null; // Get the second-to-last part
+    } catch (err) {
+      console.error("Error extracting profileId from URL:", err);
+      return null;
+    }
+  };
   
     // Get profileId from the provided steamUrl
-    const profileId = extractProfileId(steamUrl);
+  const profileId = extractProfileId(steamUrl);
+
+  const compareTasks = async () => {
+    tasks.map(async (task)=> {
+      console.log(task)
+      const gameId = task.game.appid;
+      const achievementName = task.achievement.apiname;
+      const response = await axios.get(`http://localhost:8080/get-data/${steamId}/${gameId}`)
+      const achievement = response.data.playerstats.achievements.filter((achievement: any) => achievement?.apiname === achievementName)
+      if(achievement[0].achieved === 1){
+        const taskId = task._id;
+        const res = await axios.patch('http://localhost:8080/add-completion/', {
+          params: { taskId }
+        }) //add to mongo
+      }
+    })
+  }
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -138,13 +154,11 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
               <div className="bg-gray-700 text-white rounded-lg p-4 mb-4">
                 <p className="font-semibold text-lg">{task.achievement ? task.achievement.name : "Loading..."}</p>
                 <p className="text-gray-300">{task.achievement ? task.achievement.description : "Loading..."}</p>
+                <p className="text-gray-300">{task.timeAchieved ? (`Complete ${task.achievement.timeAchieved}`) : "Incomplete"}</p>
               </div>
 
               {/* Buttons Section */}
               <div className="flex justify-between space-x-4">
-                <button className="bg-green-500 text-white rounded px-4 py-2 flex items-center h-12">
-                  Refresh
-                </button>
                 <button className="bg-red-500 text-white rounded px-4 py-2 flex items-center h-12"
                   onClick={() => deleteTask(task._id)}>
                   Delete
@@ -153,6 +167,11 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
             </div>
           ))}
           <Task setSubmitted={setSubmitted} steamId={steamId} steamUrl={steamUrl} />
+          <div className="flex justify-center">
+            <button onClick={compareTasks}className="bg-green-500 text-white rounded px-4 py-2 flex items-center h-12">
+              Update
+            </button>
+          </div>
         </div>
       </div>
     </>
