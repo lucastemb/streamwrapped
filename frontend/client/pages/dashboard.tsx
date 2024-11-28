@@ -30,7 +30,6 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
   const [tasks, setTasks] = useState<any[]>([]);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [updated, setUpdated] = useState<boolean | undefined>(false);
-  const [reRenderKey, setReRenderKey] = useState<number>(0);
 
   // Extract profileId from the steamUrl
   const extractProfileId = (url: string): string | null => {
@@ -46,12 +45,8 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
     // Get profileId from the provided steamUrl
   const profileId = extractProfileId(steamUrl);
 
-  const forceRerender = () => {
-    setReRenderKey(reRenderKey+1);
-  }
   const compareTasks = async () => {
-    setUpdated(!updated);
-    tasks.map(async (task)=> {
+    await Promise.all(tasks.map(async (task)=> {
       if(task?.type === 1){
         const gameId = task.game.appid;
         const achievementName = task.achievement.apiname;
@@ -74,7 +69,8 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
           }) //add to mongo
         }
       }
-    })
+    }))
+    setUpdated(!updated);
   }
 
   useEffect(() => {
@@ -82,6 +78,8 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
     const response = await axios.get("http://localhost:8080/get-tasks", {
       params: { steamId } 
     })
+    console.log(response.data.tasks)
+    console.log("done updated")
     setTasks(response.data.tasks)
     }
     fetchTasks();
@@ -166,7 +164,7 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
           <FriendTask steamId={steamId} steamUrl={steamUrl} setSubmitted={setSubmitted} submitted={submitted} />
           </div>
           <div className="flex justify-center">
-            <button onClick={()=> {compareTasks(); forceRerender()}}className="bg-green-500 text-white rounded px-4 py-2 flex items-center h-12">
+            <button onClick={compareTasks}className="bg-green-500 text-white rounded px-4 py-2 flex items-center h-12">
               Update
             </button>
           </div>
