@@ -82,7 +82,6 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
           })
         }
       }
-    })
     }))
     setUpdated(!updated);
   }
