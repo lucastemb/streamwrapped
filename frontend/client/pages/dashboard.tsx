@@ -158,6 +158,7 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
                   className="rounded-full"
                 />
                 <p className="text-lg font-semibold">{userProfile.personaname}</p>
+                <button onClick={()=> window.location.reload()}> Logout </button>
               </div>
             )}
           </div>
