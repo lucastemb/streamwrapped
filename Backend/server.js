@@ -115,11 +115,16 @@ app.patch("/add-completion", async(req, res)=> {
     const { taskId } = req.body;
     console.log(taskId)
     try {
-        console.log('hello!!')
         const database = client.db("steamwrapped");
         const tasks = database.collection("tasks");
-        const result = await tasks.updateOne({ _id: new ObjectId(taskId) }, { $set: {timeAchieved: Date.now()/1000}});
-        return res.status(200).json({ message: "Completion status updated successfully" });
+        const task = await tasks.findOne({_id: new ObjectId(taskId)})
+        if(task){
+            const hasAttribute = task.hasOwnProperty('timeAchieved');
+            if(!hasAttribute){
+                const result = await tasks.updateOne({ _id: new ObjectId(taskId) }, { $set: {timeAchieved: Date.now()/1000}});
+                return res.status(200).json({ message: "Completion status updated successfully" });
+            }
+        }
     }
     catch (error) {
         return res.status(500).json({error: "Internal server error"});
