@@ -9,7 +9,7 @@ interface TaskProps {
   setSubmitted: Dispatch<SetStateAction<boolean | undefined>>
 }
 
-export default function Task({steamId, steamUrl, setSubmitted }: TaskProps) {
+export default function FriendTask({steamId, steamUrl, setSubmitted }: TaskProps) {
   const [gameId, setGameId] = useState("")
   const [responseMessage, setResponseMessage] = useState<any[]>([]);
   const [gameInfo, setGameInfo] = useState<any[]>([]);
