@@ -67,6 +67,17 @@ app.get("/search-user/:profileId", async (req, res) => {
     }
   });
 
+app.get("/get-level/", async (req, res) => {
+const { steamId } = req.query
+    try {
+        const response = await axios.get(`http://127.0.0.1:8000/get-level/${steamId}`);
+        res.json(response.data);
+    } catch (error) {
+        console.error("Error fetching user data from Flask:", error.message);
+        res.status(500).send("Error fetching user data from Flask");
+    }
+});
+
 //login attempt
 //NOTE: this is a PLACEHOLDER
 app.get("/exists-user/:email", async (req, res) => {
@@ -172,6 +183,23 @@ app.post("/add-friend-task", async (req, res)=> {
         //users
         const tasks = database.collection("tasks");
         const document = { user: steamId, desiredFriendCount: friendCount, type: 2};
+        const result = await tasks.insertOne(document);
+        return res.status(201).json({ message: "Task added successfully", user: document });
+    }
+    catch (error) {
+        return res.status(500).json({error: "Internal server error"});
+    }
+
+})
+
+app.post("/add-level-task", async (req, res)=> {
+    const {steamId, wantedLevel} = req.body;
+    try {
+        //get db 
+        const database = client.db("steamwrapped");
+        //users
+        const tasks = database.collection("tasks");
+        const document = { user: steamId, level: wantedLevel, type: 3};
         const result = await tasks.insertOne(document);
         return res.status(201).json({ message: "Task added successfully", user: document });
     }
