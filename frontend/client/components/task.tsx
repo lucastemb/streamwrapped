@@ -104,17 +104,17 @@ export default function Task({steamId, steamUrl, setSubmitted }: TaskProps) {
             </button>
 
             {dropdownOpen && (
-              <ul className="flex flex-col bg-white text-black rounded shadow-md mt-2 max-h-60 overflow-y-auto w-64">
+              <ul className="bg-zinc-700 text-white rounded-lg shadow-lg mt-2 max-h-60 overflow-y-auto w-64 border border-gray-500">
                 {gameInfo.map((game: any) => (
                   <li
                     key={game.appid}
-                    className="flex items-center px-4 py-2 cursor-pointer hover:bg-gray-200"
+                    className="flex items-center px-4 py-2 cursor-pointer hover:bg-blue-600 transition-colors duration-200"
                     onClick={() => handleGameSelect(game)}
                   >
                     <img
                       src={`http://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`}
                       alt={game.name}
-                      className="w-6 h-6 mr-2"
+                      className="w-6 h-6 mr-2 rounded-md"
                     />
                     {game.name}
                   </li>
@@ -144,18 +144,18 @@ export default function Task({steamId, steamUrl, setSubmitted }: TaskProps) {
             </button>
             </div>
             
-            {achievementDropdown && (<ul className="flex flex-col bg-white text-black rounded shadow-md mt-2 max-h-60 overflow-y-auto w-64"> 
+            {achievementDropdown && (<ul className="bg-zinc-700 text-white rounded-lg shadow-lg mt-2 max-h-60 overflow-y-auto w-64 border border-gray-500"> 
             {responseMessage
               .filter((achievement) => achievement.achieved === 0)
               .map((achievement: any, index: number) => (
                 
                 <li
                   key={index}
-                  className="flex flex-col text-center items-center px-4 py-2 cursor-pointer hover:bg-gray-200"
+                  className="flex flex-col text-center items-center px-4 py-2 cursor-pointer hover:bg-blue-600 duration-200"
                   onClick={()=> handleAchievementSelect(achievement)}
                 >
-                  <p className="font-bold">{achievement.name}</p>
-                  <p>{achievement.description}</p>
+                  <p className="font-semibold">{achievement.name}</p>
+                  <p className="text-gray-300 text-sm">{achievement.description}</p>
                 </li>
               ))}
               </ul>
