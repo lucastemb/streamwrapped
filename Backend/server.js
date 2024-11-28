@@ -78,8 +78,6 @@ const { steamId } = req.query
     }
 });
 
-//login attempt
-//NOTE: this is a PLACEHOLDER
 app.get("/exists-user/:email", async (req, res) => {
         const { email } = req.params
         try {

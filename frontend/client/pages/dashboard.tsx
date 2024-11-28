@@ -2,7 +2,7 @@ import Image from "next/image";
 import localFont from "next/font/local";
 import Task from "../components/task";
 import FriendTask from "../components/friendtask";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import axios from "axios";
 import AchievementTile from "@/components/achievementtile";
 import { throwIfDisallowedDynamic } from "next/dist/server/app-render/dynamic-rendering";
@@ -32,8 +32,13 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
   const [tasks, setTasks] = useState<any[]>([]);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [updated, setUpdated] = useState<boolean | undefined>(false);
+  const [sortType, setSortType] = useState<number>(-1); 
+  const [isOpen, setIsOpen] = useState(false);
 
-  // Extract profileId from the steamUrl
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
+
   const extractProfileId = (url: string): string | null => {
     try {
       const parts = url.split("/");
@@ -42,6 +47,25 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
       console.error("Error extracting profileId from URL:", err);
       return null;
     }
+  };
+
+  const filterTasks = (tasks: any[], sortType: number): any[] => {
+      switch (sortType) {
+        case 0: 
+          //complete
+          return tasks.filter((task) => task?.timeAchieved)
+        case 1:
+          //incomplete
+          return tasks.filter((task) => !(task?.timeAchieved))
+        case 2:
+          return tasks.filter((task) => task.type === 3)
+        case 3:
+          return tasks.filter((task) => task.type === 1)
+        case 4:
+          return tasks.filter((task) => task.type === 2)
+        default:
+          return tasks
+      }
   };
   
     // Get profileId from the provided steamUrl
@@ -163,8 +187,42 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
               </div>
             )}
           </div>
-  
-          {tasks && tasks.map((task: any) => {
+          <div className="inline-block text-left">
+            {/* Dropdown Button */}
+            <button
+              onClick={toggleDropdown}
+              className="bg-blue-500 text-white px-4 py-2 rounded-md"
+            >
+              Select
+            </button>
+
+            {/* Dropdown Menu */}
+            {isOpen && (
+              <div className="right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                <ul className="text-black">
+                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={()=> setSortType(-1)}>
+                    No Sorting
+                  </li>
+                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={()=> setSortType(0)}>
+                    Complete
+                  </li>
+                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={()=> setSortType(1)}>
+                    Incomplete
+                  </li>
+                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={()=> setSortType(2)}>
+                    Level-Based
+                  </li>
+                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={()=> setSortType(3)}>
+                    Achievement-Based
+                  </li>
+                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={()=> setSortType(4)}>
+                    Friend-Based
+                  </li>
+                </ul>
+              </div>
+            )}
+          </div>
+          {tasks && filterTasks(tasks, sortType).map((task: any) => {
             switch(task.type){
               case 1: 
                 return <AchievementTile task={task} deleteTask={deleteTask}/>
