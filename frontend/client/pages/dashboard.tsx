@@ -134,6 +134,7 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
           backgroundImage: `url('/images/websitebackground.jpg')`,
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
         }}
       >
         <div className="bg-slate-700/70 min-h-screen text-white p-4">
