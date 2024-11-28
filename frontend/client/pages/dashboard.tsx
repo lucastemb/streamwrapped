@@ -7,6 +7,8 @@ import axios from "axios";
 import AchievementTile from "@/components/achievementtile";
 import { throwIfDisallowedDynamic } from "next/dist/server/app-render/dynamic-rendering";
 import FriendTile from "@/components/friendtile";
+import LevelTask from "@/components/leveltask";
+import LevelTile from "@/components/leveltile";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -72,6 +74,17 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
           const res = await axios.patch('http://localhost:8080/add-completion/', {
             taskId: taskId
           }) //add to mongo
+        }
+      }
+      else if(task?.type === 3) {
+        const levelResponse = await axios.get('http://localhost:8080/get-level', {params: {steamId}})
+        const currentLevel = levelResponse.data.player_level;
+        console.log(currentLevel);
+        if(task.level <= currentLevel) {
+          const taskId = task._id;
+          const res = await axios.patch('http://localhost:8080/add-completion/', {
+            taskId: taskId
+          })
         }
       }
     })
@@ -157,6 +170,8 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
                 return <AchievementTile task={task} deleteTask={deleteTask}/>
               case 2:
                 return <FriendTile task={task} deleteTask={deleteTask}/>
+              case 3:
+                return <LevelTile task={task} deleteTask={deleteTask}/>
               default:
                 return null
             }
@@ -164,6 +179,7 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
           <div className="flex flex-row justify-around items-center"> 
           <Task steamId={steamId} steamUrl={steamUrl} setSubmitted={setSubmitted} submitted={submitted} />
           <FriendTask steamId={steamId} steamUrl={steamUrl} setSubmitted={setSubmitted} submitted={submitted} />
+          <LevelTask steamId={steamId} setSubmitted={setSubmitted} submitted={submitted} />
           </div>
           <div className="flex justify-center">
             <button onClick={()=> {compareTasks(); forceRerender()}}className="bg-green-500 text-white rounded px-4 py-2 flex items-center h-12">
