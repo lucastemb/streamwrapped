@@ -153,95 +153,129 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
     <>
       {/* Background */}
       <div
-        className="min-h-screen bg-cover bg-center"
+        className="min-h-screen bg-cover bg-center min-w-[1000px]"
         style={{
           backgroundImage: `url('/images/websitebackground.jpg')`,
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
         }}
       >
-        <div className="bg-slate-700/70 min-h-screen text-white p-4">
-          {/* Title */}
-          <div className="flex flex-col items-center mb-8">
-            <Image
-              src="/images/Steam_icon_logo.png"
-              alt="Steam Logo"
-              width={70}
-              height={70}
-              className="mb-4"
-            />
-            <h1 className="text-3xl font-bold">Steam Wrapped</h1>
-            {/* Profile Pic and Name */}
-            {userProfile && (
-              <div className="absolute top-10 left-10 bg-slate-900/80 text-white rounded-lg p-4 shadow-lg flex items-center space-x-4">
+        <div className="bg-slate-700/70">
+          <div className="min-h-screen text-white p-2 fade-in-top-to-bottom flex">
+            {/* Left Panel */}
+            <div className="w-auto bg-slate-800/80 p-6 rounded-lg shadow-lg">
+              {/* Profile Section */}
+              {userProfile && (
+                <div className="mb-6">
+                  <h2 className="text-lg font-bold mb-4">User Info</h2>
+                  <div className="bg-slate-900 flex items-center space-x-4 p-4 rounded-lg">
+                    <Image
+                      src={`https://avatars.steamstatic.com/${userProfile.avatarhash}_full.jpg`}
+                      alt={`${userProfile.personaname} Profile Pic`}
+                      width={70}
+                      height={70}
+                      className="rounded-full"
+                    />
+                    <p className="text-lg font-semibold">{userProfile.personaname}</p>
+                    <button
+                      className="bg-slate-600 flex items-center rounded-md px-4 h-12 hover:bg-slate-700 duration-100"
+                      onClick={() => window.location.reload()}
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                </div>
+              )}
+  
+              {/* Filter Section */}
+              <div className="bg-slate-700/70 p-3 rounded-md flex flex-col space-y-2">
+                <p className="text-lg font-semibold">Filter Tasks:</p>
+                {/* Filter container */}
+                <div className="bg-slate-800 p-2 rounded-md mt-2">
+                  <div className="flex flex-col space-y-1">
+                    {["No Sorting", "Complete", "Incomplete", "Level-Based", "Achievement-Based", "Friend-Based",].map(
+                      (label, index) => (
+                      <button
+                        key={index}
+                        className={`px-4 py-2 rounded-md text-left font-medium duration-150 ${
+                          sortType === index - 1
+                            ? "bg-blue-600 text-white" // Active button
+                            : "text-gray-300 hover:bg-slate-700" // Normal hover
+                        }`}
+                        onClick={() => setSortType(index - 1)}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+  
+            {/* Right Panel */}
+            <div className="w-3/4 ml-2">
+              <div className="flex flex-col items-center mb-4">
                 <Image
-                  src={`https://avatars.steamstatic.com/${userProfile.avatarhash}_full.jpg`}
-                  alt={`${userProfile.personaname} Profile Pic`}
+                  src="/images/Steam_icon_logo.png"
+                  alt="Steam Logo"
                   width={70}
                   height={70}
-                  className="rounded-full"
+                  className="mb-4 drop-shadow-[0_4px_10px_rgba(0,0,0,0.75)]"
                 />
-                <p className="text-lg font-semibold">{userProfile.personaname}</p>
-                <button onClick={()=> window.location.reload()}> Logout </button>
+                <h1 className="text-3xl font-bold drop-shadow-[0_4px_10px_rgba(0,0,0,0.75)]">
+                  Steam Wrapped
+                </h1>
               </div>
-            )}
-          </div>
-          <div className="inline-block text-left">
-            {/* Dropdown Button */}
-            <button
-              onClick={toggleDropdown}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md"
-            >
-              Select
-            </button>
-
-            {/* Dropdown Menu */}
-            {isOpen && (
-              <div className="right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
-                <ul className="text-black">
-                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={()=> setSortType(-1)}>
-                    No Sorting
-                  </li>
-                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={()=> setSortType(0)}>
-                    Complete
-                  </li>
-                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={()=> setSortType(1)}>
-                    Incomplete
-                  </li>
-                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={()=> setSortType(2)}>
-                    Level-Based
-                  </li>
-                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={()=> setSortType(3)}>
-                    Achievement-Based
-                  </li>
-                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={()=> setSortType(4)}>
-                    Friend-Based
-                  </li>
-                </ul>
+  
+              {/* Tasks */}
+              <div>
+                {tasks &&
+                  filterTasks(tasks, sortType).map((task: any) => {
+                    switch (task.type) {
+                      case 1:
+                        return <AchievementTile task={task} deleteTask={deleteTask} />;
+                      case 2:
+                        return <FriendTile task={task} deleteTask={deleteTask} />;
+                      case 3:
+                        return <LevelTile task={task} deleteTask={deleteTask} />;
+                      default:
+                        return null;
+                    }
+                  })}
               </div>
-            )}
-          </div>
-          {tasks && filterTasks(tasks, sortType).map((task: any) => {
-            switch(task.type){
-              case 1: 
-                return <AchievementTile task={task} deleteTask={deleteTask}/>
-              case 2:
-                return <FriendTile task={task} deleteTask={deleteTask}/>
-              case 3:
-                return <LevelTile task={task} deleteTask={deleteTask}/>
-              default:
-                return null
-            }
-          })}
-          <div className="flex flex-row justify-around items-center"> 
-          <Task steamId={steamId} steamUrl={steamUrl} setSubmitted={setSubmitted} submitted={submitted} />
-          <FriendTask steamId={steamId} steamUrl={steamUrl} setSubmitted={setSubmitted} submitted={submitted} />
-          <LevelTask steamId={steamId} setSubmitted={setSubmitted} submitted={submitted} />
-          </div>
-          <div className="flex justify-center">
-            <button onClick={compareTasks}className="bg-green-500 text-white rounded px-4 py-2 flex items-center h-12">
-              Update
-            </button>
+  
+              {/* Task Creation */}
+              <div className="flex flex-row justify-around items-center">
+                <Task
+                  steamId={steamId}
+                  steamUrl={steamUrl}
+                  setSubmitted={setSubmitted}
+                  submitted={submitted}
+                />
+                <FriendTask
+                  steamId={steamId}
+                  steamUrl={steamUrl}
+                  setSubmitted={setSubmitted}
+                  submitted={submitted}
+                />
+                <LevelTask
+                  steamId={steamId}
+                  setSubmitted={setSubmitted}
+                  submitted={submitted}
+                />
+              </div>
+  
+              {/* Update Button */}
+              <div className="flex justify-center mt-8">
+                <button
+                  onClick={compareTasks}
+                  className="bg-green-500 text-white rounded px-4 py-2 flex items-center h-12 hover:bg-green-600 duration-100"
+                >
+                  Update
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

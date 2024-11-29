@@ -47,23 +47,24 @@ export default function Home() {
             backgroundImage: `url('/images/websitebackground.jpg')`,
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
           }}
         >
           <div className="bg-slate-700/70 min-h-screen text-white flex flex-col items-center justify-center">
             {/* Logo and Title */}
-            <div className="text-center mb-8">
+            <div className="flex items-center justify-center mb-8 opacity-0 animate-fadeIn">
               <img
                 src="/images/Steam_icon_logo.png"
                 alt="Steam Logo"
-                className="mx-auto mb-4"
-                width={70}
-                height={70}
+                className="mr-4 drop-shadow-[0_4px_10px_rgba(0,0,0,0.75)]"
+                width={100}
+                height={100}
               />
-              <h1 className="text-3xl font-bold">Steam Wrapped</h1>
+              <h1 className="text-6xl font-bold text-center drop-shadow-[0_4px_10px_rgba(0,0,0,0.75)]">Steam Wrapped</h1>
             </div>
 
             {/* Google Login */}
-            <div className="bg-blue-500 text-white px-4 py-2 rounded-lg">
+            <div className="bg-slate-200/50 text-white px-4 py-2 rounded-lg opacity-0 animate-fadeIn">
               <GoogleLogin
                 onSuccess={(response) => {
                   const token = response.credential || "";
