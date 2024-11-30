@@ -829,3 +829,22 @@ def test_get_achievements(user_id,app_id,expected_status,expected_resp):
     assert response.status_code == expected_status
     if(response.status_code==200):
         assert response.json() == json.loads(expected_resp)
+
+# Test for the /get-friends endpoint
+def test_get_friends():
+    response = requests.get(f"http://127.0.0.1:8000/get-friends/76561198109081792")
+    assert response.status_code == 200
+    assert isinstance(response.json(), dict)  # Ensure the response is a JSON object
+    # Additional checks based on actual API response structure
+    if response.status_code == 200 and "error" not in response.json():
+        assert "friends" in response.json() or len(response.json()) > 0  # Check for friends data
+
+# Test for the /get-level endpoint
+def test_get_level():
+    response = requests.get(f"http://127.0.0.1:8000/get-level/76561198109081792")
+    assert response.status_code == 200
+    assert isinstance(response.json(), dict)  # Ensure the response is a JSON object
+    # Additional checks based on actual API response structure
+    if response.status_code == 200 and "error" not in response.json():
+        assert "level" in response.json() or "player_level" in response.json()  # Check for level data
+
