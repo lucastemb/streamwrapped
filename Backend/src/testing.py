@@ -829,3 +829,30 @@ def test_get_achievements(user_id,app_id,expected_status,expected_resp):
     assert response.status_code == expected_status
     if(response.status_code==200):
         assert response.json() == json.loads(expected_resp)
+
+# Test get_friends endpoint
+@pytest.mark.parametrize("user_id, expected_status, expected_resp_part", [
+    ("76561198109081792", 200, "friendslist"),  # Valid user ID
+    ("NonexistentUserID", 200, None),  # Nonexistent user ID
+])
+def test_get_friends(user_id, expected_status, expected_resp_part):
+    response = requests.get(f"http://127.0.0.1:8000/get-friends/{user_id}")
+    assert response.status_code == expected_status
+    if expected_resp_part:
+        assert expected_resp_part in response.json()
+    else:
+        assert response.json() == {}
+
+# Test get_level endpoint
+@pytest.mark.parametrize("user_id, expected_status, expected_resp_key", [
+    ("76561198109081792", 200, "player_level"),  # Valid user ID
+    ("NonexistentUserID", 200, None),  # Nonexistent user ID
+])
+def test_get_level(user_id, expected_status, expected_resp_key):
+    response = requests.get(f"http://127.0.0.1:8000/get-level/{user_id}")
+    assert response.status_code == expected_status
+    if expected_resp_key:
+        assert expected_resp_key in response.json()
+    else:
+        assert response.json() == {}
+
