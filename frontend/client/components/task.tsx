@@ -81,14 +81,18 @@ export default function Task({steamId, steamUrl, setSubmitted, submitted }: Task
 
   return (
     <>
-    <div className="flex flex-row justify-center">
+    <div className="flex flex-col justify-center px-2 py-2 m-2 bg-gradient-to-b from-blue-800 to-slate-900 rounded-md">
+      {/* Achievement Goal Title */}
+      <h1 className="text-lg font-bold text-center mb-2 border-b-2 border-white">Achievement Goal</h1>
+      {/* Game and Achievment Row */}
+      <div className="flex flex-row justify-between items-start gap-1 bg-slate-800 px-2 py-2 rounded-md">
         {/* Game Dropdown */}
         {gameInfo.length > 0 && (
-          <div className="mb-4 flex flex-col">
+          <div className="mb-1 flex flex-col">
             <label className="font-semibold">Game: </label>
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="bg-blue-500 text-white rounded px-4 py-2 flex items-center"
+              className="bg-blue-600 hover:bg-blue-700 duration-100 text-white rounded px-4 py-2 flex items-center"
             >
               {selectedGame ? (
                 <>
@@ -133,7 +137,7 @@ export default function Task({steamId, steamUrl, setSubmitted, submitted }: Task
             <label className="font-semibold">Achievement: </label>
             <button
               onClick={() => setAchievementDropdownOpen(!achievementDropdown)}
-              className="bg-blue-500 text-white rounded px-4 py-2 flex items-center"
+              className="bg-blue-600 hover:bg-blue-700 duration-100 text-white rounded px-4 py-2 flex items-center"
             >
               {selectedAchievement ? (
                 <>
@@ -165,21 +169,24 @@ export default function Task({steamId, steamUrl, setSubmitted, submitted }: Task
         ) : <div className="flex flex-col">
         <label className="font-semibold">Achievement: </label>
         <div
-          className="bg-blue-500 text-white rounded px-4 py-2 flex items-center"
+          className="bg-blue-600 text-white text-center rounded px-4 py-2 flex items-center"
         >
-        No achievements found
+        No locked achievements found
         </div>
         </div>) : 
         (<div className="flex flex-col">
           <label className="font-semibold">Achievement: </label>
           <div
-            className="bg-blue-500 text-white rounded px-4 py-2 flex items-center"
+            className="bg-blue-600 text-white text-center rounded px-4 py-2 flex items-center"
           >
-          No achievements found
+          No locked achievements found
           </div>
           </div>)}
+        </div>
+
+        {/* Submit Button */}
         <div className="flex justify-center items-center">
-        <button className="bg-green-600 text-white rounded px-4 flex items-center h-12" onClick={()=>addTask(selectedGame, selectedAchievement)}>
+        <button className="bg-green-500 text-white rounded px-4 flex items-center h-12 hover:bg-green-600 duration-100 my-1" onClick={()=>addTask(selectedGame, selectedAchievement)}>
           Submit
         </button>
         </div>

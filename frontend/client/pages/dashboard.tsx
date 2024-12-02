@@ -153,7 +153,7 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
     <>
       {/* Background */}
       <div
-        className="min-h-screen bg-cover bg-center min-w-[1000px]"
+        className="min-h-screen min-w-screen bg-cover bg-center"
         style={{
           backgroundImage: `url('/images/websitebackground.jpg')`,
           backgroundRepeat: 'no-repeat',
@@ -164,7 +164,7 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
         <div className="bg-slate-700/70">
           <div className="min-h-screen text-white p-2 fade-in-top-to-bottom flex">
             {/* Left Panel */}
-            <div className="w-auto bg-slate-800/80 p-6 rounded-lg shadow-lg">
+            <div className="w-auto bg-gradient-to-b from-slate-900/80 to-slate-800/80 p-6 rounded-lg shadow-lg">
               {/* Profile Section */}
               {userProfile && (
                 <div className="mb-6">
@@ -227,7 +227,43 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
                   Steam Wrapped
                 </h1>
               </div>
-  
+              
+              {/* Task Creation */}
+              <div className="flex justify-center">
+                <div className="w-fit flex flex-col justify-center px-2 py-2 m-2 bg-slate-900/70 rounded-md drop-shadow-[0_0px_10px_rgba(0,0,0,0.50)]">
+                  <h1 className="text-2xl font-bold text-center mb-2">Goal Creation</h1>
+                  <div className="flex flex-row justify-center gap-1">
+                    <Task
+                      steamId={steamId}
+                      steamUrl={steamUrl}
+                      setSubmitted={setSubmitted}
+                      submitted={submitted}
+                    />
+                    <FriendTask
+                      steamId={steamId}
+                      steamUrl={steamUrl}
+                      setSubmitted={setSubmitted}
+                      submitted={submitted}
+                    />
+                    <LevelTask
+                      steamId={steamId}
+                      setSubmitted={setSubmitted}
+                      submitted={submitted}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Update Button */}
+              <div className="flex justify-center">
+                <button
+                  onClick={compareTasks}
+                  className="bg-green-500 text-white rounded px-4 py-2 mb-2 flex items-center h-12 hover:bg-green-600 duration-100"
+                >
+                  Update Goals
+                </button>
+              </div>
+
               {/* Tasks */}
               <div>
                 {tasks &&
@@ -243,37 +279,6 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
                         return null;
                     }
                   })}
-              </div>
-  
-              {/* Task Creation */}
-              <div className="flex flex-row justify-around items-center">
-                <Task
-                  steamId={steamId}
-                  steamUrl={steamUrl}
-                  setSubmitted={setSubmitted}
-                  submitted={submitted}
-                />
-                <FriendTask
-                  steamId={steamId}
-                  steamUrl={steamUrl}
-                  setSubmitted={setSubmitted}
-                  submitted={submitted}
-                />
-                <LevelTask
-                  steamId={steamId}
-                  setSubmitted={setSubmitted}
-                  submitted={submitted}
-                />
-              </div>
-  
-              {/* Update Button */}
-              <div className="flex justify-center mt-8">
-                <button
-                  onClick={compareTasks}
-                  className="bg-green-500 text-white rounded px-4 py-2 flex items-center h-12 hover:bg-green-600 duration-100"
-                >
-                  Update
-                </button>
               </div>
             </div>
           </div>
