@@ -4,9 +4,9 @@
 TERM_TYPE=$(basename "$TERM")
 
 # Define the commands for each terminal
-COMMAND1="python Backend/src/infrastructure.py"
-COMMAND2="cd Backend && npm install nodemon && npm install cors && npm run dev"
-COMMAND3="cd frontend/client && npm install next@latest react@latest react-dom@latest axios && npm run dev"
+COMMAND1="pip install flask python-steam-api python-dotenv pymongo && python Backend/src/infrastructure.py"
+COMMAND2="cd Backend && npm install nodemon && npm install cors && npm install mongodb && npm install dotenv && npm run dev"
+COMMAND3="cd frontend/client && npm install next@latest react@latest react-dom@latest @react-oauth/google && npm install jwt-decode && npm install axios && npm run dev"
 echo "$TERM_TYPE"
 case "$TERM_TYPE" in
     gnome-terminal)
