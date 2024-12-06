@@ -3,6 +3,7 @@ import axios from 'axios';
 import Image from "next/image";
 import { Dispatch, SetStateAction } from "react";
 
+// Define props interface for the Task component
 interface TaskProps {
   steamId: string
   steamUrl: string
@@ -11,6 +12,7 @@ interface TaskProps {
 }
 
 export default function Task({steamId, steamUrl, setSubmitted, submitted }: TaskProps) {
+  // State variables for managing component data and UI
   const [gameId, setGameId] = useState("")
   const [responseMessage, setResponseMessage] = useState<any[]>([]);
   const [gameInfo, setGameInfo] = useState<any[]>([]);
@@ -19,7 +21,7 @@ export default function Task({steamId, steamUrl, setSubmitted, submitted }: Task
   const [selectedGame, setSelectedGame] = useState<any>(null);
   const [selectedAchievement, setSelectedAchievement] = useState<any>(null);
  
-
+  // Effect hook to fetch games when component mounts or steamId changes
   useEffect(()=> {
     const fetchGames = async () => {
       try {
@@ -41,7 +43,7 @@ export default function Task({steamId, steamUrl, setSubmitted, submitted }: Task
     fetchGames()
   }, [steamId])
 
-
+  // Handler for game selection
   const handleGameSelect = (game: any) => {
     setSelectedGame(game);
     setGameId(game.appid.toString());
@@ -49,6 +51,7 @@ export default function Task({steamId, steamUrl, setSubmitted, submitted }: Task
     fetchAchievements(game.appid.toString());
   };
 
+  // Function to add a task (selected game and achievement)
   const addTask = async (game: any, achievement: any) => {
     const response = await axios.post('http://127.0.0.1:8080/add-task/', {
       steamId,
@@ -63,11 +66,14 @@ export default function Task({steamId, steamUrl, setSubmitted, submitted }: Task
     
     }
   }
+
+  // Handler for achievement selection
   const handleAchievementSelect = (achievement: any) => {
     setSelectedAchievement(achievement);
     setAchievementDropdownOpen(false)
   }
   
+  // Function to fetch achievements for a selected game
   const fetchAchievements = async (selectedGameId: string) => {
     if (!selectedGameId) return;
   
@@ -81,10 +87,11 @@ export default function Task({steamId, steamUrl, setSubmitted, submitted }: Task
 
   return (
     <>
+    {/* Main container */}
     <div className="flex flex-col justify-center px-2 py-2 m-2 bg-gradient-to-b from-blue-800 to-slate-900 rounded-md">
       {/* Achievement Goal Title */}
       <h1 className="text-lg font-bold text-center mb-2 border-b-2 border-white">Achievement Goal</h1>
-      {/* Game and Achievment Row */}
+      {/* Game and Achievement Row */}
       <div className="flex flex-row justify-between items-start gap-1 bg-slate-800 px-2 py-2 rounded-md">
         {/* Game Dropdown */}
         {gameInfo.length > 0 && (
@@ -108,6 +115,7 @@ export default function Task({steamId, steamUrl, setSubmitted, submitted }: Task
               )}
             </button>
 
+            {/* Game dropdown list */}
             {dropdownOpen && (
               <ul className="bg-zinc-700 text-white rounded-lg shadow-lg mt-2 max-h-60 overflow-y-auto w-64 border border-gray-500">
                 {gameInfo.map((game: any) => (
@@ -129,7 +137,7 @@ export default function Task({steamId, steamUrl, setSubmitted, submitted }: Task
           </div>
         )}
 
-        {/* Achievements */}
+        {/* Achievements Dropdown */}
         {responseMessage ? (responseMessage?.length > 0 ? (
           
           <div className="flex flex-col">
@@ -149,6 +157,7 @@ export default function Task({steamId, steamUrl, setSubmitted, submitted }: Task
             </button>
             </div>
             
+            {/* Achievement dropdown list */}
             {achievementDropdown && (<ul className="bg-zinc-700 text-white rounded-lg shadow-lg mt-2 max-h-60 overflow-y-auto w-64 border border-gray-500"> 
             {responseMessage
               .filter((achievement) => achievement.achieved === 0)
