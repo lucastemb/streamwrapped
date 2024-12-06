@@ -5,14 +5,18 @@ import axios from 'axios';
 import Dashboard from './dashboard';
 import Form from './form';
 
+//Logic for Homepage
 const Home: React.FC = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [steamId, setSteamId] = useState('');
   const [steamURL, setSteamURL] = useState('');
   const [email, setEmail] = useState('');
   const [exists, setExists] = useState<boolean | undefined>();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Add loading state
 
+  //  checkUserExists checks if user is logged in, and if email has been returned by Google OAuth. If true, then checks if user exists in database.
+  //      if user exists, then steamId and steamURL variables will be filled with valid data. 
+  
   useEffect(() => {
     const checkUserExists = async () => {
       if (loggedIn && email) {
@@ -33,6 +37,7 @@ const Home: React.FC = () => {
         }
       }
     };
+
     checkUserExists();
   }, [loggedIn, email]);
 
@@ -42,6 +47,12 @@ const Home: React.FC = () => {
     setEmail(decodedResponse.email);
     setLoggedIn(true);
   };
+  
+  //  when checkUserExists sets `loading` to false (e.g. returned from function, error or not) the user will be brought
+  //    to the dashboard if user exists. if user didn't exist, but Google OAuth returned no error, then the user will
+  //    be brought to the account creation form. If Google OAuth raises an error, an appropriate error message is 
+  //    displayed on this page. finally, if user is not logged in according to Google OAuth, then this page displays
+  //    the Google OAuth login button, which allows the whole process to repeat again.
 
   if (!loggedIn) {
     return (
