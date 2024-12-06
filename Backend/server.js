@@ -16,7 +16,7 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   }
 });
-
+// attempts to connect to mongoDB
 async function connectToDatabase() {
     try {
       await client.connect();
@@ -55,7 +55,7 @@ app.get("/get-games/:playerId", async (req, res) => {
         res.status(500).send('Error pinging Flask server');
     }
 });
-
+//searches for user based on name
 app.get("/search-user/:profileId", async (req, res) => {
     const { profileId } = req.params;
     try {
@@ -68,6 +68,8 @@ app.get("/search-user/:profileId", async (req, res) => {
       res.status(500).send("Error fetching user data from Flask");
     }
   });
+
+//checks if User ID (numerical) exists on steam database. if not, returns status code 210 to indicate invalid ID
 app.get("/validate-user-id/:userId", async (req, res) => {
     const { userId } = req.params;
     try {
@@ -80,6 +82,9 @@ app.get("/validate-user-id/:userId", async (req, res) => {
       res.status(500).send("Error fetching user data from Flask");
     }
   });
+
+//checks if input URL is valid and links to the steamcommunity.com website, then pings URL for response code. If page exists, return status 200
+//to indicate succes. Otherwise, return 210 to indicate invalid URL.
 app.get("/search-url", async (req, res) => {
     const { steamURL } = req.query;
     try {
@@ -93,7 +98,7 @@ app.get("/search-url", async (req, res) => {
       res.status(500).send("Error fetching url data from Flask");
     }
   });
-
+//gets level using python backend.
 app.get("/get-level/", async (req, res) => {
 const { steamId } = req.query
     try {
@@ -104,7 +109,7 @@ const { steamId } = req.query
         res.status(500).send("Error fetching user data from Flask");
     }
 });
-
+//checks if user email exists in mongoDB database.
 app.get("/exists-user/:email", async (req, res) => {
         const { email } = req.params
         try {
@@ -122,7 +127,7 @@ app.get("/exists-user/:email", async (req, res) => {
             return res.json({error: "Internal server error"});
         }
 });
-
+//gets list of tasks for a user from mongoDB
 app.get("/get-tasks", async (req, res) => {
     const { steamId } = req.query
     try {
@@ -135,7 +140,7 @@ app.get("/get-tasks", async (req, res) => {
         return res.json({error: "Internal server error"});
     }
 });
-
+//gets friend list using python backend and steam-web-api PyPi package
 app.get("/get-friends", async (req, res) => {
     const { steamId } = req.query
     try {
@@ -146,7 +151,7 @@ app.get("/get-friends", async (req, res) => {
     res.status(500).send("Error fetching user data from Flask");
     }
 });
-
+//updates completion status of task, if applicable
 app.patch("/add-completion", async(req, res)=> {
     const { taskId } = req.body;
     console.log(taskId)
@@ -166,7 +171,7 @@ app.patch("/add-completion", async(req, res)=> {
         return res.status(500).json({error: "Internal server error"});
     }
 })
-
+//adds user data to mongoDB
 app.post("/add-user/:email/:steamID/:steamURL", async (req, res) => {
     const { email, steamID, steamURL } = req.params;
     try {
@@ -182,7 +187,7 @@ app.post("/add-user/:email/:steamID/:steamURL", async (req, res) => {
         return res.status(500).json({error: "Internal server error"});
     }
 });
-
+//adds an achievement based task to user's task list using mongoDB
 app.post("/add-task", async (req, res)=> {
     const {steamId, game, achievement} = req.body;
     try {
@@ -199,7 +204,7 @@ app.post("/add-task", async (req, res)=> {
     }
 
 })
-
+//adds a friend-count based task to user's task list using mongoDB
 app.post("/add-friend-task", async (req, res)=> {
     const {steamId, friendCount} = req.body;
     try {
@@ -216,7 +221,7 @@ app.post("/add-friend-task", async (req, res)=> {
     }
 
 })
-
+//adds a steam level based task to user's task list using mongoDB
 app.post("/add-level-task", async (req, res)=> {
     const {steamId, wantedLevel} = req.body;
     try {
@@ -233,7 +238,7 @@ app.post("/add-level-task", async (req, res)=> {
     }
 
 })
-
+//deletes task by id from mongoDB database
 app.delete("/delete-task", async (req, res)=> {
     const { taskId } = req.query;
     try {

@@ -6,6 +6,7 @@ import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import Form from "./form"
 
+//Logic for Homepage
 export default function Home() {
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [steamId, setSteamId] = useState<string>("");
@@ -14,7 +15,8 @@ export default function Home() {
   const [email, setEmail] = useState<string>("");
   const [exists, setExists] = useState<boolean>();
   const [loading, setLoading] = useState<boolean>(true); // Add loading state
-
+  //  getStuff checks if user is logged in, and if email has been returned by Google OAuth. If true, then checks if user exists in database.
+  //      if user exists, then steamId and steamURL variables will be filled with valid data. 
   useEffect(() => {
     const getStuff = async () => {
       if (loggedIn && email) {
@@ -37,7 +39,11 @@ export default function Home() {
     };
     getStuff();
   });
-
+  //  when getStuff sets `loading` to false (e.g. returned from function, error or not) the user will be brought
+  //    to the dashboard if user exists. if user didn't exist, but Google OAuth returned no error, then the user will
+  //    be brought to the account creation form. If Google OAuth raises an error, an appropriate error message is 
+  //    displayed on this page. finally, if user is not logged in according to Google OAuth, then this page displays
+  //    the Google OAuth login button, which allows the whole process to repeat again.
   return (
     <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_CLIENT_ID || " "}>
       {!loggedIn ? (

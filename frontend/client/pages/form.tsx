@@ -6,6 +6,7 @@ interface FormProps {
     email: string
     setExists: Dispatch<SetStateAction<boolean | undefined>>
 }
+//Logic for User account creation form.
 export default function InputForm({ email, setExists}: FormProps) {
     const [steamId,setSteamId] = useState<string>()
     const [steamURL,setSteamURL] = useState<string>()
@@ -19,16 +20,13 @@ export default function InputForm({ email, setExists}: FormProps) {
     const handleURLChange = (e:any) => {
         setSteamURL(e.target.value)
     }
- // axios.get(`http://localhost:8000/search-url/?q=${encodeURIComponent(steamURL)}`).then((response) => {
-                //     if(response.status === 200){
-                //         setValidId(true);
-                //     }
-                // }),
-                // axios.get(`http://localhost:8000/search-user/${encodeURIComponent(steamId)}`).then((response) => {
-                //     if(response.status === 200){
-                //         setValidId(true);
-                //     }
-                // }),
+    // Note: submitToMongo function is bound to the 'Submit' button on the webpage. This function checks if both steamId and steamURL 
+    //      field have text, then checks if SteamID is valid using python's steam-web-api.
+    //      next checks if steamURL is valid (starts with steamcommunity.com/id/) then gets response 
+    //      using python's requests library to check status code response. Iff steamURL and steamId are valid, then submits them to 
+    //      mongoDB by calling add-user endpoint on Express server.
+    // On event of steamId or steamURL being invalid, the proper error message is shown to the user by setting failure and then validId, ValidURL respectively.
+    // This causes a ternary expression on the return statement of the InputForm function to display error message.
     const submitToMongo = async () => {
         let searchURL_Response;
         if (steamId && steamURL){
