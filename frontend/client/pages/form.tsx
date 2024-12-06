@@ -30,24 +30,42 @@ export default function InputForm({ email, setExists}: FormProps) {
                 //     }
                 // }),
     const submitToMongo = async () => {
+        let searchURL_Response;
         if (steamId && steamURL){
             try {
-                const [searchURL_Response, searchUser_Response] = await Promise.all([
-                    axios.get(`http://localhost:8080/search-url/${encodeURIComponent(steamURL)}`),
-                    axios.get(`http://localhost:8080/search-user/${encodeURIComponent(steamId)}`)
-                ]);
-                if(searchURL_Response.status === 200){
-                    setValidURL(true);
+                if(steamURL.length > 30 && steamURL.substring(0,30) === "https://steamcommunity.com/id/"){
+                    searchURL_Response=await axios.get(`http://localhost:8080/search-url?steamURL=${encodeURIComponent(steamURL)}`);
+                    console.log("search url status",searchURL_Response.status);
+                    if(searchURL_Response&& searchURL_Response.status === 200){
+                        setValidURL(true);
+                    }
+                    
+                }else if(steamURL.length>22 && steamURL.substring(0,22) === "steamcommunity.com/id/"){
+                    searchURL_Response=await axios.get(`https://${encodeURIComponent(steamURL)}`);
+                    console.log(searchURL_Response.status);
+                    if(searchURL_Response&& searchURL_Response.status === 200){
+                        setValidURL(true);
+                    }
+                }else{
+                    setValidURL(false);
                 }
-                if(searchUser_Response.status === 200){
+            }catch(error){
+                console.log((error.response)?(error.response.status):("no response from server"));
+                setValidURL(false);
+                setFailure(true);
+            }
+            try {
+                const searchUser_Response = await axios.get(`http://localhost:8080/validate-user-id/${encodeURIComponent(steamId)}`);
+                console.log(searchUser_Response.status);
+                if(searchUser_Response&& searchUser_Response.status === 200){
                     setValidId(true);
                 }
-                if(searchURL_Response.status === 200 && searchUser_Response.status === 200){
+                if(searchURL_Response && searchURL_Response.status === 200 && searchUser_Response && searchUser_Response.status === 200){
                     setFailure(false);
                     const post_resp = await axios.post(
                         `http://localhost:8080/add-user/${encodeURIComponent(email)}/${encodeURIComponent(steamId)}/${encodeURIComponent(steamURL)}`
                     );
-                    if(response.status === 201){
+                    if(post_resp.status === 201){
                         setExists(true);
                     }
                 } else {
@@ -91,7 +109,7 @@ export default function InputForm({ email, setExists}: FormProps) {
                 <p className="text-red-500 mt-4">Error: Invalid Id. ID must be all numbers and must appear as in your Steam account details</p>
                 )}
             {failure && !validURL && (
-                <p className="text-red-500 mt-4">Error: Invalid URL. URL must be a valid steam community profile link \n Example: https://steamcommunity.com/id/gaben</p>
+                <p className="text-red-500 mt-4" itemprop={steamURL.substring(0,29)}>Error: Invalid URL. URL must be a valid steam community profile link \n Example: https://steamcommunity.com/id/gaben</p>
                 )}
             {failure && (
                 <p className="text-red-500 mt-4">Account not added due to above reason(s)</p>

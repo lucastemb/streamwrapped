@@ -60,22 +60,37 @@ app.get("/search-user/:profileId", async (req, res) => {
     const { profileId } = req.params;
     try {
       const response = await axios.get(`http://127.0.0.1:8000/search-user/${profileId}`);
-      res.json(response.data);
       console.log("search user response:", response.status);
+      return res.status(response.status).json(response.data);
+      
     } catch (error) {
       console.error("Error fetching user data from Flask:", error.message);
       res.status(500).send("Error fetching user data from Flask");
     }
   });
-app.get("/search-url/:steamurl", async (req, res) => {
-    const { steamurl } = req.params;
+app.get("/validate-user-id/:userId", async (req, res) => {
+    const { userId } = req.params;
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/search-url/?q=${steamurl}`);
-      res.json(response.data);
-      console.log("search url response:", response.status);
+      const response = await axios.get(`http://127.0.0.1:8000/validate-user-id/${userId}`);
+      console.log("search user response:", response.status);
+      return res.status(response.status).json(response.data);
+      
     } catch (error) {
       console.error("Error fetching user data from Flask:", error.message);
       res.status(500).send("Error fetching user data from Flask");
+    }
+  });
+app.get("/search-url", async (req, res) => {
+    const { steamURL } = req.query;
+    try {
+      console.log("search url query:", steamURL);  
+      const response = await axios.get(`http://127.0.0.1:8000/search-url?steamURL=${steamURL}`);
+      console.log("search url response:", response.status);
+      res.status(response.status).json(response.data);
+      console.log("search url response:", response.status);
+    } catch (error) {
+      console.error("Error fetching url data from Flask:", error.message);
+      res.status(500).send("Error fetching url data from Flask");
     }
   });
 
