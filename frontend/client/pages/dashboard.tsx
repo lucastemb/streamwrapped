@@ -123,20 +123,21 @@ export default function Dashboard({email, steamId, steamUrl}: DashboardProps) {
   },[updated, submitted])
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const response = await axios.get(`http://localhost:8080/search-user/${profileId}`);
-        console.log("User Profile:", response.data);
-        setUserProfile(response.data.player);
-
-        //console.log("Avatar Hash:", response.data.player.avatarhash);
-        //console.log("Persona Name:", response.data.player.personaname);
-      } catch (err) {
-        console.error("Error fetching user profile:", err);
-      }
-    };
-
-    fetchUserProfile();
+    if (profileId) {
+      const fetchUserProfile = async () => {
+        try {
+          const response = await axios.get(`http://localhost:8080/search-user/${profileId}`);
+          console.log("User Profile:", response.data);
+          setUserProfile(response.data.player);
+        } catch (err) {
+          console.error("Error fetching user profile:", err);
+        }
+      };
+  
+      fetchUserProfile();
+    } else {
+      console.error("Profile ID is null or invalid.");
+    }
   }, [profileId]);
 
   const deleteTask = async (taskId: string) => {
